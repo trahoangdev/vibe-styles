@@ -30,13 +30,15 @@ export function BlogPreview({ style, cardStyle }: BlogPreviewProps) {
                     </div>
 
                     <div
-                        className="w-full aspect-[2/1] rounded-2xl bg-muted mb-12 relative overflow-hidden"
+                        className="w-full aspect-[2/1] rounded-2xl bg-muted mb-12 relative overflow-hidden group"
                         style={{ borderRadius: style.radius }}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-accent/20" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-9xl opacity-10 select-none">Aa</span>
-                        </div>
+                        <img
+                            src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=1200"
+                            alt="Abstract 3D Shape"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                     </div>
 
                     <article className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-p:leading-relaxed prose-p:opacity-90" style={{ color: `hsl(${style.colors.foreground})` }}>

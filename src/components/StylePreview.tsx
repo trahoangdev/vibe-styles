@@ -1,5 +1,5 @@
 import { type DesignStyle } from '@/lib/designStyles';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PreviewHeader } from './preview/PreviewHeader';
 import { HeroPreview } from './preview/HeroPreview';
 import { AuthPreview } from './preview/AuthPreview';
@@ -29,6 +29,8 @@ interface StylePreviewProps {
   onToggleEditor?: () => void;
   showEditorButton?: boolean;
   isEditorOpen?: boolean;
+  isDebugMode?: boolean;
+  onToggleDebugMode?: () => void;
 }
 
 export function StylePreview({
@@ -37,9 +39,38 @@ export function StylePreview({
   onToggleFullScreen,
   onToggleEditor,
   showEditorButton = false,
-  isEditorOpen = false
+  isEditorOpen = false,
+  isDebugMode = false,
+  onToggleDebugMode
 }: StylePreviewProps) {
   const [devicePreview, setDevicePreview] = useState<DeviceType>('desktop');
+  const [debugInfo, setDebugInfo] = useState<{ x: number, y: number, label: string } | null>(null);
+
+  // Debug mode hover listener
+  useEffect(() => {
+    // Only remove helper if we are NOT in debug mode
+    if (!isDebugMode) {
+      setDebugInfo(null);
+      return;
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+
+      // Simple heuristic to identify key elements
+      let label = target.tagName.toLowerCase();
+      if (target.className && typeof target.className === 'string') {
+        const classes = target.className.split(' ').filter(c => !c.startsWith('hover:') && !c.startsWith('transition-'));
+        if (classes.length > 0) label += `.${classes[0].substring(0, 15)}...`;
+      }
+
+      setDebugInfo({ x: e.clientX, y: e.clientY, label });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isDebugMode]);
 
   const cssVars = useMemo(() => ({
     '--style-primary': style.colors.primary,
@@ -115,7 +146,10 @@ export function StylePreview({
           onToggleFullScreen={onToggleFullScreen}
         />
 
-        <main className={`p-8 lg:p-12 mx-auto ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}>
+        <main
+          key={style.id}
+          className={`p-8 lg:p-12 mx-auto animate-fade-in ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
+        >
           {isPersonal && (
             <BentoGridPreview style={style} cardStyle={cardStyle} />
           )}
@@ -134,7 +168,39 @@ export function StylePreview({
         .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / var(--style-shadow-opacity)), 0 4px 6px -4px rgb(0 0 0 / var(--style-shadow-opacity)); }
         .shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / var(--style-shadow-opacity)), 0 8px 10px -6px rgb(0 0 0 / var(--style-shadow-opacity)); }
         .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / var(--style-shadow-opacity)); }
+
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
       `}</style>
+
+            {/* Dynamic Mesh Background */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 opacity-30">
+              <div
+                className="absolute top-0 left-1/4 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"
+                style={{ backgroundColor: `hsl(${style.colors.primary})` }}
+              />
+              <div
+                className="absolute top-0 right-1/4 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"
+                style={{ backgroundColor: `hsl(${style.colors.accent})` }}
+              />
+              <div
+                className="absolute -bottom-8 left-1/3 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"
+                style={{ backgroundColor: `hsl(${style.colors.primary})` }}
+              />
+            </div>
 
             <AuthPreview
               style={style}

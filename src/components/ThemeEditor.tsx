@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import {
   Palette, Type, Square, RotateCcw, ChevronDown, ChevronUp,
   Download, FileCode, Copy, Check, Undo2, Redo2, Eye, ShieldCheck,
-  AlertCircle, Save, Trash2, Bookmark, Layers
+  AlertCircle, Save, Trash2, Bookmark, Layers, Rocket
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -792,6 +792,19 @@ export function ThemeEditor({
                   </div>
                   <Download className="w-4 h-4 opacity-20 group-hover:opacity-100" />
                 </button>
+                <div className="pt-2">
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toast({ title: "Deployment Ready", description: "Connect your Git repository to Vercel to ship this theme.", });
+                    }}
+                    className="w-full flex items-center justify-between px-5 py-3 border border-dashed border-primary/30 text-primary rounded-xl transition-colors hover:bg-primary/5 group"
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Deploy to Production</span>
+                    <Rocket className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </div>
               </div>
             )}
           </section>

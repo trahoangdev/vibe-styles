@@ -1,8 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { StyleSidebar, StyleSidebarRef } from '@/components/StyleSidebar';
 import { StylePreview } from '@/components/StylePreview';
 import { ThemeEditor, type ThemeOverrides } from '@/components/ThemeEditor';
 import { KeyboardShortcutsPanel } from '@/components/KeyboardShortcutsPanel';
+import { OnboardingTour } from '@/components/OnboardingTour';
+import { CommandPalette } from '@/components/CommandPalette';
 import { designStyles } from '@/lib/designStyles';
 import { toast } from '@/hooks/use-toast';
 import { getFullExportCode } from '@/lib/designStyles';
@@ -13,14 +15,35 @@ import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
-  const [selectedStyle, setSelectedStyle] = useState(designStyles[0]);
+  const [selectedStyle, setSelectedStyle] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedId = localStorage.getItem('vibestyle-selected-id');
+      if (savedId) {
+        const found = designStyles.find(s => s.id === savedId);
+        if (found) return found;
+      }
+    }
+    return designStyles[0];
+  });
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+  const [isDebugMode, setIsDebugMode] = useState(false);
+
   // Undo/Redo for theme overrides
+  const initialOverrides = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('vibestyle-overrides');
+      if (stored) {
+        try { return JSON.parse(stored); } catch (e) { console.error('Failed to parse overrides', e); }
+      }
+    }
+    return {};
+  }, []);
+
   const {
     state: themeOverrides,
     pushState: setThemeOverrides,
@@ -31,16 +54,25 @@ const Index = () => {
     canRedo,
     historyLength,
     currentIndex,
-  } = useUndoRedo<ThemeOverrides>({});
-  
+  } = useUndoRedo<ThemeOverrides>(initialOverrides);
+
   const sidebarRef = useRef<StyleSidebarRef>(null);
   const { toggleTheme } = useTheme();
 
   const currentStyleIndex = designStyles.findIndex(s => s.id === selectedStyle.id);
 
+  // Persistence Effects
+  useEffect(() => {
+    localStorage.setItem('vibestyle-selected-id', selectedStyle.id);
+  }, [selectedStyle.id]);
+
+  useEffect(() => {
+    localStorage.setItem('vibestyle-overrides', JSON.stringify(themeOverrides));
+  }, [themeOverrides]);
+
   const handleCopyStyle = async () => {
     const code = getFullExportCode(selectedStyle);
-    
+
     try {
       await navigator.clipboard.writeText(code);
       toast({
@@ -54,7 +86,7 @@ const Index = () => {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      
+
       toast({
         title: "Copied to clipboard!",
         description: `${selectedStyle.name} design system is ready to paste.`,
@@ -77,7 +109,7 @@ const Index = () => {
   };
 
   const navigateStyle = useCallback((direction: 'prev' | 'next') => {
-    const newIndex = direction === 'prev' 
+    const newIndex = direction === 'prev'
       ? (currentStyleIndex - 1 + designStyles.length) % designStyles.length
       : (currentStyleIndex + 1) % designStyles.length;
     handleSelectStyle(designStyles[newIndex]);
@@ -92,12 +124,14 @@ const Index = () => {
     { key: 'z', ctrl: true, handler: () => { if (canUndo) undoTheme(); }, description: 'Undo' },
     { key: 'z', ctrl: true, shift: true, handler: () => { if (canRedo) redoTheme(); }, description: 'Redo' },
     { key: 'y', ctrl: true, handler: () => { if (canRedo) redoTheme(); }, description: 'Redo' },
-    { key: 'Escape', handler: () => {
-      if (showShortcuts) setShowShortcuts(false);
-      else if (isFullScreen) setIsFullScreen(false);
-      else if (showEditor) setShowEditor(false);
-      else if (isMobileMenuOpen) setIsMobileMenuOpen(false);
-    }, description: 'Close panel' },
+    {
+      key: 'Escape', handler: () => {
+        if (showShortcuts) setShowShortcuts(false);
+        else if (isFullScreen) setIsFullScreen(false);
+        else if (showEditor) setShowEditor(false);
+        else if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+      }, description: 'Close panel'
+    },
     { key: '?', shift: true, handler: () => setShowShortcuts(prev => !prev), description: 'Show shortcuts' },
     { key: 'ArrowUp', handler: () => navigateStyle('prev'), description: 'Previous style' },
     { key: 'ArrowDown', handler: () => navigateStyle('next'), description: 'Next style' },
@@ -150,7 +184,7 @@ const Index = () => {
 
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="md:hidden fixed inset-0 z-30 bg-background/80 backdrop-blur-sm animate-fade-in"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -162,7 +196,7 @@ const Index = () => {
           'hidden md:block transition-all duration-300',
           isSidebarCollapsed ? 'w-16' : 'w-72'
         )}>
-          <StyleSidebar 
+          <StyleSidebar
             ref={sidebarRef}
             selectedStyle={selectedStyle}
             onSelectStyle={handleSelectStyle}
@@ -179,7 +213,7 @@ const Index = () => {
         'md:hidden fixed top-14 left-0 bottom-0 z-30 transition-transform duration-300',
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       )}>
-        <StyleSidebar 
+        <StyleSidebar
           ref={sidebarRef}
           selectedStyle={selectedStyle}
           onSelectStyle={handleSelectStyle}
@@ -193,15 +227,18 @@ const Index = () => {
         'flex-1 flex relative transition-all duration-300',
         'md:pt-0 pt-14' // Account for mobile header
       )}>
-        <StylePreview 
-          style={effectiveStyle} 
+        <StylePreview
+          style={effectiveStyle}
           isFullScreen={isFullScreen}
           onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
+          // update shortcuts
           onToggleEditor={() => setShowEditor(!showEditor)}
           showEditorButton={!isFullScreen}
           isEditorOpen={showEditor}
+          isDebugMode={isDebugMode}
+          onToggleDebugMode={() => setIsDebugMode(!isDebugMode)}
         />
-        
+
         {/* Theme Editor Panel */}
         {showEditor && !isFullScreen && (
           <div className="hidden md:block animate-slide-in">
@@ -233,9 +270,23 @@ const Index = () => {
       </div>
 
       {/* Keyboard Shortcuts Panel */}
-      <KeyboardShortcutsPanel 
-        isOpen={showShortcuts} 
-        onClose={() => setShowShortcuts(false)} 
+      <KeyboardShortcutsPanel
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
+
+      <OnboardingTour />
+
+      <CommandPalette
+        open={showCommandPalette}
+        onOpenChange={setShowCommandPalette}
+        onSelectStyle={handleSelectStyle}
+        currentStyleId={selectedStyle.id}
+        onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
+        onToggleEditor={() => setShowEditor(!showEditor)}
+        onToggleDebugMode={() => setIsDebugMode(!isDebugMode)}
+        isDebugMode={isDebugMode}
+        onCopyStyle={handleCopyStyle}
       />
     </div>
   );

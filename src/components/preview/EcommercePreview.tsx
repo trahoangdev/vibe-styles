@@ -8,10 +8,10 @@ interface EcommercePreviewProps {
 
 export function EcommercePreview({ style, cardStyle }: EcommercePreviewProps) {
     const products = [
-        { name: 'Vibe Core Node', price: '$299', rating: 5, category: 'Hardware' },
-        { name: 'Neural Link v2', price: '$89', rating: 4, category: 'Interface' },
-        { name: 'Protocol Alpha', price: '$599', rating: 5, category: 'Enterprise' },
-        { name: 'Sync Module', price: '$149', rating: 4, category: 'Utility' },
+        { name: 'Vibe Core Node', price: '$299', rating: 5, category: 'Hardware', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=500' },
+        { name: 'Neural Link v2', price: '$89', rating: 4, category: 'Interface', image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?auto=format&fit=crop&q=80&w=500' },
+        { name: 'Protocol Alpha', price: '$599', rating: 5, category: 'Enterprise', image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&q=80&w=500' },
+        { name: 'Sync Module', price: '$149', rating: 4, category: 'Utility', image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=500' },
     ];
 
     return (
@@ -49,14 +49,20 @@ export function EcommercePreview({ style, cardStyle }: EcommercePreviewProps) {
                         }}
                     >
                         <div className="aspect-square bg-muted/30 relative overflow-hidden group-hover:scale-[1.02] transition-transform">
-                            <div
-                                className="absolute inset-0 opacity-10 blur-2xl group-hover:opacity-20 transition-opacity"
-                                style={{ backgroundColor: `hsl(${style.colors.primary})` }}
+                            <img
+                                src={product.image}
+                                alt={product.name}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 group-hover:rotate-12 transition-all">
-                                <Star className="w-20 h-20" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0 duration-300">
+                                <button className="p-3 rounded-full bg-white text-black shadow-xl hover:scale-110 transition-transform">
+                                    <ShoppingCart className="w-5 h-5" />
+                                </button>
                             </div>
-                            <button className="absolute top-3 right-3 p-2 rounded-full bg-surface/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all hover:text-error">
+
+                            <button className="absolute top-3 right-3 p-2 rounded-full bg-white/10 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-red-500">
                                 <Heart className="w-4 h-4" />
                             </button>
                         </div>

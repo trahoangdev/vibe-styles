@@ -1,8 +1,10 @@
 import { type DesignStyle } from '@/lib/designStyles';
 import {
     Search, User, Maximize2, Minimize2, Sliders,
-    Smartphone, Tablet, Monitor, Bug
+    Smartphone, Tablet, Monitor, Bug,
+    Sun, Moon
 } from 'lucide-react';
+import { useTheme } from '@/hooks/use-theme';
 
 interface PreviewHeaderProps {
     style: DesignStyle;
@@ -29,6 +31,8 @@ export function PreviewHeader({
     isDebugMode,
     onToggleDebugMode
 }: PreviewHeaderProps) {
+    const { theme, toggleTheme } = useTheme();
+
     return (
         <header className="sticky top-0 z-10 px-8 py-4 flex items-center justify-between border-b border-[hsl(var(--style-border))] bg-[hsl(var(--style-bg))] backdrop-blur-md bg-opacity-80">
             <div>
@@ -130,6 +134,20 @@ export function PreviewHeader({
                     style={{ borderRadius: style.radius }}
                 >
                     <Search className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                </button>
+
+
+                <button
+                    onClick={toggleTheme}
+                    className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110"
+                    style={{ borderRadius: style.radius }}
+                    title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                >
+                    {theme === 'dark' ? (
+                        <Sun className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                    ) : (
+                        <Moon className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                    )}
                 </button>
 
                 <div
