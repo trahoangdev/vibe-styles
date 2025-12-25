@@ -56,3 +56,6 @@ temp/
 # Coverage
 coverage/
 *.lcov
+
+#markdown files
+*.md

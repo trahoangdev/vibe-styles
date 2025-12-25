@@ -19,6 +19,8 @@ export interface DesignStyle {
     heading: string;
     body: string;
     mono?: string;
+    headingWeight?: string;
+    bodyWeight?: string;
   };
   colors: {
     primary: string;
@@ -37,6 +39,7 @@ export interface DesignStyle {
     error: string;
   };
   radius: string;
+  shadowStrength?: number; // 0 to 1 scale
   characteristics: string[];
 }
 
@@ -649,6 +652,44 @@ export const designStyles: DesignStyle[] = [
       'Large rounded corners (16px)',
     ],
   },
+  {
+    id: 'vibe-official',
+    name: 'Vibe Styles (Official)',
+    description: 'The ultimate agentic design system. Deep glassmorphism, high-contrast monochrome with violet sparks.',
+    icon: 'zap',
+    theme: 'dark',
+    category: ['tech', 'dark'],
+    fonts: {
+      heading: '"Inter", sans-serif',
+      body: '"Inter", sans-serif',
+      mono: '"JetBrains Mono", monospace',
+    },
+    colors: {
+      primary: '265 100% 65%',
+      primaryForeground: '0 0% 100%',
+      accent: '265 100% 65%',
+      accentForeground: '0 0% 100%',
+      background: '240 10% 4%',
+      foreground: '0 0% 100%',
+      surface: '240 10% 6%',
+      surfaceForeground: '0 0% 100%',
+      muted: '240 10% 12%',
+      mutedForeground: '240 5% 65%',
+      border: '240 10% 15%',
+      success: '142 70% 50%',
+      warning: '40 95% 60%',
+      error: '0 91% 60%',
+    },
+    radius: '1.25rem',
+    characteristics: [
+      'True Black depth (#0A0A0B)',
+      'Electric Violet accents (#A855F7)',
+      'Ultra-thick glassmorphism (20px blur)',
+      'Inter tight tracking (-0.02em)',
+      'Subtle border glows and high-contrast lines',
+      'Fluid motion and spring-based hovers',
+    ],
+  },
 ];
 
 export function generateStyleCSS(style: DesignStyle): string {
@@ -862,7 +903,7 @@ ${generateTailwindConfig(style)}
 
 function getFontImports(style: DesignStyle): string {
   const imports: string[] = [];
-  
+
   if (style.fonts.heading.includes('Playfair')) {
     imports.push('<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">');
   }
@@ -890,6 +931,6 @@ function getFontImports(style: DesignStyle): string {
   if (style.fonts.mono?.includes('Fira Code')) {
     imports.push('<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">');
   }
-  
+
   return imports.length > 0 ? imports.join('\n') : '<!-- System fonts used - no imports needed -->';
 }
