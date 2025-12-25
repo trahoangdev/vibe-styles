@@ -94,6 +94,7 @@ const Index = () => {
       ? (currentStyleIndex - 1 + designStyles.length) % designStyles.length
       : (currentStyleIndex + 1) % designStyles.length;
     handleSelectStyle(designStyles[newIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStyleIndex]);
 
   // Keyboard shortcuts
@@ -147,6 +148,7 @@ const Index = () => {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

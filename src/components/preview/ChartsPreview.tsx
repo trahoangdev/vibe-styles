@@ -47,7 +47,19 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
         style.colors.warning
     ];
 
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    interface TooltipPayload {
+        name: string;
+        value: number;
+        color: string;
+    }
+
+    interface CustomTooltipProps {
+        active?: boolean;
+        payload?: TooltipPayload[];
+        label?: string;
+    }
+
+    const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         if (active && payload && payload.length) {
             return (
                 <div
@@ -60,7 +72,7 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
                     }}
                 >
                     <p className="font-bold mb-1">{label}</p>
-                    {payload.map((p: any, i: number) => (
+                    {payload.map((p, i) => (
                         <p key={i} style={{ color: p.color }}>
                             {p.name}: {p.value}
                         </p>

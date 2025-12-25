@@ -47,6 +47,8 @@ desktop.ini
 # Tools
 .gemini/
 .agent/
+.shared/
+
 .temp/
 temp/
 

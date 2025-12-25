@@ -648,6 +648,44 @@ export const designStyles: DesignStyle[] = [
   },
 
   {
+    id: 'cyberpunk',
+    name: 'Cyberpunk',
+    description: 'High-tech low-life. Neon glows, glitch effects, and futuristic maximalism.',
+    icon: 'cpu',
+    theme: 'dark',
+    category: ['tech', 'dark'],
+    fonts: {
+      heading: '"Orbitron", "Exo 2", sans-serif',
+      body: '"Exo 2", "Rajdhani", sans-serif',
+      mono: '"Share Tech Mono", monospace',
+    },
+    colors: {
+      primary: '320 100% 55%', // Neon Pink
+      primaryForeground: '0 0% 100%',
+      accent: '180 100% 50%', // Cyan
+      accentForeground: '0 0% 0%',
+      background: '260 50% 10%', // Deep Purple/Black
+      foreground: '180 10% 90%',
+      surface: '260 50% 15%',
+      surfaceForeground: '180 10% 90%',
+      muted: '260 40% 20%',
+      mutedForeground: '260 20% 70%',
+      border: '320 80% 40%', // Pinkish border
+      success: '120 100% 50%', // Neon Green
+      warning: '60 100% 50%', // Neon Yellow
+      error: '0 100% 60%',
+    },
+    radius: '0', // Sharp corners
+    characteristics: [
+      'Neon glow effects',
+      'Sharp, angular corners',
+      'Grid lines and technical markings',
+      'Glitch data visualization',
+      'High contrast cyber-palette',
+      'HUD-inspired interface elements',
+    ],
+  },
+  {
     id: 'vibe-official',
     name: 'Vibe Styles',
     description: 'The ultimate agentic design system. Deep glassmorphism, high-contrast monochrome with violet sparks.',
