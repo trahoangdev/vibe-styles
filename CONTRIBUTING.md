@@ -20,7 +20,7 @@ Thank you for your interest in contributing to Vibe Styles! We welcome contribut
 1. **Fork the repository** to your own GitHub account.
 2. **Clone your fork** to your local machine:
    ```sh
-   git clone https://github.com/your-username/vibe-styles.git
+   git clone https://github.com/trahoangdev/vibe-styles.git
    ```
 3. **Create a new branch** for your changes:
    ```sh
