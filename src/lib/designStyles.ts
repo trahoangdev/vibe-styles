@@ -649,7 +649,7 @@ export const designStyles: DesignStyle[] = [
 
   {
     id: 'vibe-official',
-    name: 'Vibe Styles (Official)',
+    name: 'Vibe Styles',
     description: 'The ultimate agentic design system. Deep glassmorphism, high-contrast monochrome with violet sparks.',
     icon: 'zap',
     theme: 'dark',

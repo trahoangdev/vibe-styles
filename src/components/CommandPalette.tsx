@@ -19,7 +19,9 @@ import {
     Rocket,
     Moon,
     Sun,
-    Bug
+    Bug,
+    RotateCcw,
+    RotateCw
 } from "lucide-react";
 import { DesignStyle, designStyles } from "@/lib/designStyles";
 import { useTheme } from "@/hooks/use-theme";
@@ -34,6 +36,8 @@ interface CommandPaletteProps {
     onToggleDebugMode: () => void;
     isDebugMode: boolean;
     onCopyStyle: () => void;
+    onUndo: () => void;
+    onRedo: () => void;
 }
 
 export function CommandPalette({
@@ -45,7 +49,9 @@ export function CommandPalette({
     onToggleEditor,
     onToggleDebugMode,
     isDebugMode,
-    onCopyStyle
+    onCopyStyle,
+    onUndo,
+    onRedo
 }: CommandPaletteProps) {
     const { theme, toggleTheme } = useTheme();
 
@@ -106,6 +112,19 @@ export function CommandPalette({
                         {theme === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
                         <span>Toggle {theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
                         <CommandShortcut>D</CommandShortcut>
+                    </CommandItem>
+                </CommandGroup>
+
+                <CommandGroup heading="Editing">
+                    <CommandItem onSelect={() => runCommand(onUndo)}>
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        <span>Undo Change</span>
+                        <CommandShortcut>⌘Z</CommandShortcut>
+                    </CommandItem>
+                    <CommandItem onSelect={() => runCommand(onRedo)}>
+                        <RotateCw className="mr-2 h-4 w-4" />
+                        <span>Redo Change</span>
+                        <CommandShortcut>⌘Y</CommandShortcut>
                     </CommandItem>
                 </CommandGroup>
 

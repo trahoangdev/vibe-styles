@@ -4,7 +4,7 @@ import {
     TrendingUp, TrendingDown, DollarSign, Activity,
     MoreVertical, PieChart, Layers
 } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DashboardPreviewProps {
@@ -32,18 +32,18 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
     ];
 
     return (
-        <section className={`rounded-3xl border border-border overflow-hidden bg-muted/20 ${isMobile ? 'h-auto' : 'h-[600px]'} flex relative shadow-2xl`}>
+        <section className={`rounded-3xl border border-border overflow-hidden bg-muted/20 ${isMobile ? 'h-auto' : 'h-[600px]'} flex relative shadow-2xl @container`}>
             {/* Backdrop Blur for "Desktop within Desktop" feel */}
             <div className="absolute inset-0 backdrop-blur-[1px] pointer-events-none -z-10" />
 
             {/* Simulated Sidebar */}
             <aside
-                className={`w-16 md:w-64 bg-surface border-r border-border flex flex-col transition-all ${isMobile ? 'hidden' : 'flex'}`}
+                className={`w-16 @lg:w-64 bg-surface border-r border-border flex flex-col transition-all ${isMobile ? 'hidden' : 'flex'}`}
                 style={{ backgroundColor: `hsl(${style.colors.surface})` }}
             >
                 <div className="h-16 flex items-center px-6 border-b border-border/50">
                     <div className="w-6 h-6 rounded bg-primary mr-3" />
-                    <span className="font-bold text-lg tracking-tight hidden md:block" style={{ fontFamily: style.fonts.heading }}>Acme Corp.</span>
+                    <span className="font-bold text-lg tracking-tight hidden @lg:block" style={{ fontFamily: style.fonts.heading }}>Acme Corp.</span>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
@@ -59,13 +59,13 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
                             style={{ borderRadius: style.radius }}
                         >
                             <item.icon className="w-5 h-5" />
-                            <span className="hidden md:block">{item.label}</span>
+                            <span className="hidden @lg:block">{item.label}</span>
                         </button>
                     ))}
                 </nav>
 
                 <div className="p-4 border-t border-border/50">
-                    <div className={`p-4 rounded-xl bg-muted/50 hidden md:block`} style={{ borderRadius: style.radius }}>
+                    <div className={`p-4 rounded-xl bg-muted/50 hidden @lg:block`} style={{ borderRadius: style.radius }}>
                         <h4 className="text-xs font-bold mb-1">Pro Plan</h4>
                         <p className="text-[10px] text-muted-foreground mb-3">Your team has used 80% of your free spots.</p>
                         <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-3">
@@ -112,7 +112,7 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
                                 </div>
 
                                 {/* Stats Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className="grid grid-cols-1 @md:grid-cols-3 gap-6 mb-8">
                                     {stats.map((stat, i) => (
                                         <div key={i} className={`${cardStyle} p-6 bg-surface`} style={{ borderRadius: style.radius }}>
                                             <div className="flex items-center justify-between mb-4">
@@ -131,9 +131,9 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
                                 </div>
 
                                 {/* Chart & Activity Grid */}
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div className="grid grid-cols-1 @3xl:grid-cols-3 gap-8">
                                     {/* Main Chart Placeholder */}
-                                    <div className={`col-span-2 ${cardStyle} p-6 min-h-[300px] flex flex-col`} style={{ borderRadius: style.radius }}>
+                                    <div className={`@3xl:col-span-2 ${cardStyle} p-6 min-h-[300px] flex flex-col`} style={{ borderRadius: style.radius }}>
                                         <div className="flex items-center justify-between mb-6">
                                             <h3 className="font-bold">Revenue Overview</h3>
                                             <div className="flex bg-muted/50 rounded-lg p-0.5">
@@ -146,13 +146,22 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
                                         </div>
                                         <div className="flex-1 w-full bg-muted/10 rounded-lg border border-dashed border-border flex items-end justify-between px-4 pb-0 pt-8 gap-2 overflow-hidden">
                                             {/* Fake Bars */}
-                                            {Array.from({ length: 12 }).map((_, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/40 transition-colors"
-                                                    style={{ height: `${Math.random() * 60 + 20}%` }}
-                                                />
-                                            ))}
+                                            {/* Fake Bars */}
+                                            {Array.from({ length: 12 }).map((_, i) => {
+                                                // eslint-disable-next-line react-hooks/rules-of-hooks
+                                                const height = React.useMemo(() => Math.random() * 60 + 20, []);
+                                                return (
+                                                    <motion.div
+                                                        key={i}
+                                                        className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/40 transition-colors cursor-pointer"
+                                                        initial={{ height: 0 }}
+                                                        whileInView={{ height: `${height}%` }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ duration: 0.8, delay: i * 0.05, ease: "easeOut" }}
+                                                        whileHover={{ scaleY: 1.1, backgroundColor: "hsl(var(--primary) / 0.5)" }}
+                                                    />
+                                                );
+                                            })}
                                         </div>
                                     </div>
 

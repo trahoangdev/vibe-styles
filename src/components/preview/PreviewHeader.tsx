@@ -39,7 +39,7 @@ export function PreviewHeader({
         <header className={`sticky top-0 z-10 py-4 flex items-center justify-between border-b border-[hsl(var(--style-border))] bg-[hsl(var(--style-bg))] backdrop-blur-md bg-opacity-80 ${devicePreview === 'mobile' ? 'px-4' : 'px-8'}`}>
             <div>
                 <h1 className="text-xl font-semibold tracking-tight" style={{ fontFamily: style.fonts.heading }}>
-                    {style.name} Preview
+                    {style.name}
                 </h1>
                 <p className="text-xs font-medium uppercase tracking-widest opacity-60" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                     Vibe Styles Explorer
@@ -161,6 +161,6 @@ export function PreviewHeader({
                     <User className="w-4 h-4" style={{ color: `hsl(${style.colors.accentForeground})` }} />
                 </div>
             </div>
-        </header>
+        </header >
     );
 }

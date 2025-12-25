@@ -1,6 +1,8 @@
-import { Palette, ChevronDown, ChevronUp } from 'lucide-react';
+import { Palette, ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 import { ThemeOverrides } from '@/lib/designStyles';
 import { hslToHex, hexToHsl } from '@/lib/colorUtils';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface ColorsSectionProps {
     currentColors: {
@@ -24,6 +26,7 @@ export function ColorsSection({
     isOpen,
     onToggle
 }: ColorsSectionProps) {
+    const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
     const updateColor = (key: keyof typeof currentColors, hex: string) => {
         const hsl = hexToHsl(hex);
@@ -51,6 +54,13 @@ export function ColorsSection({
         });
     };
 
+    const copyToClipboard = (hex: string, key: string) => {
+        navigator.clipboard.writeText(hex);
+        setCopiedKey(key);
+        toast.success(`Copied ${hex} to clipboard`);
+        setTimeout(() => setCopiedKey(null), 2000);
+    };
+
     return (
         <section className="border-t border-border/50">
             <button
@@ -65,7 +75,7 @@ export function ColorsSection({
             </button>
 
             {isOpen && (
-                <div className="space-y-6 pb-4 animate-fade-in pl-1">
+                <div className="space-y-8 pb-6 animate-fade-in pl-1">
                     {[
                         { key: 'background', label: 'VOID (BG)' },
                         { key: 'foreground', label: 'CONTENT (FG)' },
@@ -75,32 +85,83 @@ export function ColorsSection({
                         const colorKey = key as keyof typeof currentColors;
                         const colorParts = currentColors[colorKey].split(' ');
                         const hue = parseInt(colorParts[0]);
+                        const sat = parseInt(colorParts[1]);
+                        const light = parseInt(colorParts[2]);
+                        const hex = hslToHex(currentColors[colorKey]).toUpperCase();
 
                         return (
                             <div key={key} className="space-y-3">
                                 <div className="flex items-center justify-between">
                                     <label className="text-[9px] font-black tracking-[0.2em] opacity-50">{label}</label>
-                                    <span className="text-[10px] font-mono opacity-40">HEX: {hslToHex(currentColors[colorKey]).toUpperCase()}</span>
+                                    <button
+                                        onClick={() => copyToClipboard(hex, key)}
+                                        className="flex items-center gap-1.5 text-[10px] font-mono opacity-40 hover:opacity-100 transition-opacity"
+                                    >
+                                        {hex}
+                                        {copiedKey === key ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                    </button>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <input
-                                        type="color"
-                                        value={hslToHex(currentColors[colorKey])}
-                                        onChange={(e) => updateColor(colorKey, e.target.value)}
-                                        className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-0 outline-none"
-                                    />
-                                    <div className="flex-1 space-y-2">
+                                <div className="flex gap-4">
+                                    <div className="relative group/picker">
                                         <input
-                                            type="range"
-                                            min="0" max="360"
-                                            value={hue}
-                                            onChange={(e) => updateColorHSLComponent(colorKey, 0, parseInt(e.target.value))}
-                                            className="w-full h-1.5 appearance-none bg-gradient-to-r from-red-500 via-green-500 to-red-500 rounded-full accent-white border border-border"
+                                            type="color"
+                                            value={hex}
+                                            onChange={(e) => updateColor(colorKey, e.target.value)}
+                                            className="w-12 h-20 rounded-lg cursor-pointer bg-transparent border-0 opacity-0 absolute inset-0 z-10"
                                         />
-                                        <div className="flex justify-between text-[8px] font-black opacity-30">
-                                            <span>0°</span>
-                                            <span>HUE {hue}°</span>
-                                            <span>360°</span>
+                                        <div
+                                            className="w-12 h-20 rounded-lg border border-border shadow-sm group-hover/picker:scale-105 transition-transform"
+                                            style={{ backgroundColor: `hsl(${currentColors[colorKey]})` }}
+                                        />
+                                    </div>
+
+                                    <div className="flex-1 space-y-3 pt-1">
+                                        {/* Hue Slider */}
+                                        <div className="space-y-1">
+                                            <input
+                                                type="range"
+                                                min="0" max="360"
+                                                value={hue}
+                                                onChange={(e) => updateColorHSLComponent(colorKey, 0, parseInt(e.target.value))}
+                                                className="w-full h-1.5 appearance-none rounded-full accent-foreground cursor-pointer"
+                                                style={{ background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)' }}
+                                            />
+                                            <div className="flex justify-between text-[8px] font-bold opacity-30">
+                                                <span>HUE</span>
+                                                <span>{hue}°</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Saturation Slider */}
+                                        <div className="space-y-1">
+                                            <input
+                                                type="range"
+                                                min="0" max="100"
+                                                value={sat}
+                                                onChange={(e) => updateColorHSLComponent(colorKey, 1, parseInt(e.target.value))}
+                                                className="w-full h-1.5 appearance-none rounded-full accent-foreground cursor-pointer"
+                                                style={{ background: `linear-gradient(to right, hsl(${hue}, 0%, ${light}%), hsl(${hue}, 100%, ${light}%))` }}
+                                            />
+                                            <div className="flex justify-between text-[8px] font-bold opacity-30">
+                                                <span>SAT</span>
+                                                <span>{sat}%</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Lightness Slider */}
+                                        <div className="space-y-1">
+                                            <input
+                                                type="range"
+                                                min="0" max="100"
+                                                value={light}
+                                                onChange={(e) => updateColorHSLComponent(colorKey, 2, parseInt(e.target.value))}
+                                                className="w-full h-1.5 appearance-none rounded-full accent-foreground cursor-pointer"
+                                                style={{ background: `linear-gradient(to right, black, hsl(${hue}, ${sat}%, 50%), white)` }}
+                                            />
+                                            <div className="flex justify-between text-[8px] font-bold opacity-30">
+                                                <span>LIG</span>
+                                                <span>{light}%</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

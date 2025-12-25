@@ -266,6 +266,8 @@ const Index = () => {
         onToggleDebugMode={() => store.toggleDebugMode()}
         isDebugMode={isDebugMode}
         onCopyStyle={handleCopyStyle}
+        onUndo={() => store.undoOverrides()}
+        onRedo={() => store.redoOverrides()}
       />
     </div>
   );
