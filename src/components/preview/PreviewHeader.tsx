@@ -34,7 +34,7 @@ export function PreviewHeader({
     const { theme, toggleTheme } = useTheme();
 
     return (
-        <header className="sticky top-0 z-10 px-8 py-4 flex items-center justify-between border-b border-[hsl(var(--style-border))] bg-[hsl(var(--style-bg))] backdrop-blur-md bg-opacity-80">
+        <header className={`sticky top-0 z-10 py-4 flex items-center justify-between border-b border-[hsl(var(--style-border))] bg-[hsl(var(--style-bg))] backdrop-blur-md bg-opacity-80 ${devicePreview === 'mobile' ? 'px-4' : 'px-8'}`}>
             <div>
                 <h1 className="text-xl font-semibold tracking-tight" style={{ fontFamily: style.fonts.heading }}>
                     {style.name} Preview
@@ -44,9 +44,9 @@ export function PreviewHeader({
                 </p>
             </div>
             <div className="flex items-center gap-2">
-                {/* Device Preview Toggle */}
+                {/* Device Controls - Hidden on Mobile Simulation to avoid clutter */}
                 <div
-                    className="flex items-center gap-0.5 p-0.5 rounded-lg mr-2 bg-muted/50"
+                    className={`flex items-center gap-0.5 p-0.5 rounded-lg mr-2 bg-muted/50 ${devicePreview === 'mobile' ? 'hidden' : ''}`}
                     style={{ borderRadius: style.radius }}
                 >
                     <button
@@ -99,7 +99,7 @@ export function PreviewHeader({
                     </button>
                 )}
 
-                {onToggleFullScreen && (
+                {onToggleFullScreen && devicePreview !== 'mobile' && (
                     <button
                         onClick={onToggleFullScreen}
                         className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110"
@@ -129,12 +129,14 @@ export function PreviewHeader({
                     </button>
                 )}
 
-                <button
-                    className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110"
-                    style={{ borderRadius: style.radius }}
-                >
-                    <Search className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
-                </button>
+                {devicePreview !== 'mobile' && (
+                    <button
+                        className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110"
+                        style={{ borderRadius: style.radius }}
+                    >
+                        <Search className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                    </button>
+                )}
 
 
                 <button

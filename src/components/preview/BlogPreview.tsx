@@ -4,15 +4,16 @@ import { Calendar, Clock, User, Tag, Share2, Bookmark } from 'lucide-react';
 interface BlogPreviewProps {
     style: DesignStyle;
     cardStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function BlogPreview({ style, cardStyle }: BlogPreviewProps) {
+export function BlogPreview({ style, cardStyle, isMobile = false }: BlogPreviewProps) {
     return (
         <div className="mt-20 border-t border-border/30 pt-20 animate-fade-in">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className={`grid gap-12 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-12'}`}>
 
                 {/* Main Article Content */}
-                <div className="lg:col-span-8">
+                <div className={isMobile ? 'col-span-1' : 'lg:col-span-8'}>
                     <div className="mb-8">
                         <div className="flex items-center gap-4 text-xs font-medium opacity-60 mb-4 uppercase tracking-wider">
                             <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Dec 28, 2024</span>
@@ -89,7 +90,7 @@ export function BlogPreview({ style, cardStyle }: BlogPreviewProps) {
                 </div>
 
                 {/* Sidebar / Table of Contents */}
-                <div className="lg:col-span-4 space-y-8">
+                <div className={`${isMobile ? 'col-span-1 space-y-8' : 'lg:col-span-4 space-y-8'}`}>
                     <div
                         className={`p-6 ${cardStyle}`}
                         style={{

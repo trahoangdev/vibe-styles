@@ -8,11 +8,12 @@ interface CommunicationPreviewProps {
     style: DesignStyle;
     cardStyle: string;
     inputStyle: string;
+    isMobile?: boolean;
 }
 
-export function CommunicationPreview({ style, cardStyle, inputStyle }: CommunicationPreviewProps) {
+export function CommunicationPreview({ style, cardStyle, inputStyle, isMobile = false }: CommunicationPreviewProps) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12 animate-fade-in">
+        <div className={`grid gap-8 mt-12 animate-fade-in ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
             {/* Chat UI */}
             <div
                 className={`p-6 ${cardStyle} flex flex-col h-[480px]`}

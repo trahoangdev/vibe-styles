@@ -4,7 +4,6 @@ import { PreviewHeader } from './preview/PreviewHeader';
 import { HeroPreview } from './preview/HeroPreview';
 import { AuthPreview } from './preview/AuthPreview';
 import { StatsPreview } from './preview/StatsPreview';
-import { BentoGridPreview } from './preview/BentoGridPreview';
 import { CommunicationPreview } from './preview/CommunicationPreview';
 import { DesignSystemSpecs } from './preview/DesignSystemSpecs';
 import { DevicePreviewControls } from './preview/DevicePreviewControls';
@@ -128,7 +127,7 @@ export function StylePreview({
       />
 
       <div
-        className={`mx-auto transition-all duration-500 ease-in-out ${devicePreview !== 'desktop' ? 'border-x border-border shadow-2xl relative z-10' : ''}`}
+        className={`mx-auto transition-all duration-500 ease-in-out ${devicePreview !== 'desktop' ? 'border-[10px] border-zinc-800 rounded-[2.5rem] shadow-2xl my-8 overflow-hidden relative z-10' : ''}`}
         style={{
           maxWidth: deviceWidths[devicePreview],
           minHeight: devicePreview !== 'desktop' ? 'calc(100vh - 120px)' : 'auto',
@@ -148,17 +147,15 @@ export function StylePreview({
 
         <main
           key={style.id}
-          className={`p-8 lg:p-12 mx-auto animate-fade-in ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
+          className={`p-4 md:p-8 lg:p-12 mx-auto animate-fade-in ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
         >
-          {isPersonal && (
-            <BentoGridPreview style={style} cardStyle={cardStyle} />
-          )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          <div className={`grid gap-12 items-start ${devicePreview === 'desktop' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}>
             <HeroPreview
               style={style}
               buttonStyle={buttonStyle}
               inputStyle={inputStyle}
+              isMobile={devicePreview === 'mobile'}
             />
 
             <style>{`
@@ -207,47 +204,55 @@ export function StylePreview({
               cardStyle={cardStyle}
               buttonStyle={buttonStyle}
               inputStyle={inputStyle}
+              isMobile={devicePreview === 'mobile'}
             />
           </div>
 
-          <StatsPreview style={style} cardStyle={cardStyle} />
+          <StatsPreview style={style} cardStyle={cardStyle} isMobile={devicePreview === 'mobile'} />
 
           <CommunicationPreview
             style={style}
             cardStyle={cardStyle}
             inputStyle={inputStyle}
+            isMobile={devicePreview === 'mobile'}
           />
 
           <DesignSystemSpecs
             style={style}
             cardStyle={cardStyle}
             inputStyle={inputStyle}
+            isMobile={devicePreview === 'mobile'}
           />
 
           <LandingPreview
             style={style}
             cardStyle={cardStyle}
             buttonStyle={buttonStyle}
+            isMobile={devicePreview === 'mobile'}
           />
 
           <EcommercePreview
             style={style}
             cardStyle={cardStyle}
+            isMobile={devicePreview === 'mobile'}
           />
 
           <BlogPreview
             style={style}
             cardStyle={cardStyle}
+            isMobile={devicePreview === 'mobile'}
           />
 
           <TablePreview
             style={style}
             cardStyle={cardStyle}
+            isMobile={devicePreview === 'mobile'}
           />
 
           <ChartsPreview
             style={style}
             cardStyle={cardStyle}
+            isMobile={devicePreview === 'mobile'}
           />
         </main>
 

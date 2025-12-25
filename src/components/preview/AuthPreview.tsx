@@ -7,9 +7,10 @@ interface AuthPreviewProps {
     cardStyle: string;
     buttonStyle: string;
     inputStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function AuthPreview({ style, cardStyle, buttonStyle, inputStyle }: AuthPreviewProps) {
+export function AuthPreview({ style, cardStyle, buttonStyle, inputStyle, isMobile = false }: AuthPreviewProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (

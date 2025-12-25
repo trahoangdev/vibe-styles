@@ -23,7 +23,7 @@ A powerful tool for exploring, previewing, and customizing popular design system
 1. Clone the repository:
    ```sh
    git clone <repository-url>
-   cd style-palette
+   cd vibe-styles
    ```
 
 2. Install dependencies:

@@ -4,9 +4,10 @@ import { MoreHorizontal, ArrowUpDown, Filter, Search, Download, Trash2, Edit2, C
 interface TablePreviewProps {
     style: DesignStyle;
     cardStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function TablePreview({ style, cardStyle }: TablePreviewProps) {
+export function TablePreview({ style, cardStyle, isMobile = false }: TablePreviewProps) {
     const data = [
         { id: 'TASK-8721', title: 'Implement new auth flow', status: 'In Progress', priority: 'High', assignee: 'Alex M.', due: 'Dec 12' },
         { id: 'TASK-8722', title: 'Refactor mobile navigation', status: 'Done', priority: 'Medium', assignee: 'Sarah J.', due: 'Dec 10' },
@@ -103,8 +104,8 @@ export function TablePreview({ style, cardStyle }: TablePreviewProps) {
                                     <td className="p-4">
                                         <span
                                             className={`text-xs font-medium ${row.priority === 'Critical' ? 'text-error font-bold' :
-                                                    row.priority === 'High' ? 'text-warning' :
-                                                        'text-muted-foreground'
+                                                row.priority === 'High' ? 'text-warning' :
+                                                    'text-muted-foreground'
                                                 }`}
                                             style={{ color: row.priority === 'Critical' ? `hsl(${style.colors.error})` : undefined }}
                                         >

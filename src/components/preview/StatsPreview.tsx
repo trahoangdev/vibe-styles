@@ -4,9 +4,10 @@ import { TrendingUp, Users, Activity } from 'lucide-react';
 interface StatsPreviewProps {
     style: DesignStyle;
     cardStyle: string;
+    isMobile?: boolean;
 }
 
-export function StatsPreview({ style, cardStyle }: StatsPreviewProps) {
+export function StatsPreview({ style, cardStyle, isMobile = false }: StatsPreviewProps) {
     const stats = [
         { label: 'Network Throughput', value: '45.2 GB/s', change: '+20.1%', icon: TrendingUp },
         { label: 'Active Nodes', value: '2,405', change: '+4.2%', icon: Users },
@@ -14,7 +15,7 @@ export function StatsPreview({ style, cardStyle }: StatsPreviewProps) {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className={`grid gap-6 mt-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
             {stats.map((stat, i) => (
                 <div
                     key={i}

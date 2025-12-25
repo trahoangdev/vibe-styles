@@ -6,14 +6,15 @@ interface DesignSystemSpecsProps {
     style: DesignStyle;
     cardStyle: string;
     inputStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function DesignSystemSpecs({ style, cardStyle, inputStyle }: DesignSystemSpecsProps) {
+export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = false }: DesignSystemSpecsProps) {
     const [toggleOn, setToggleOn] = useState(true);
     const [selectedOption, setSelectedOption] = useState('a');
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 animate-fade-in">
+        <div className={`grid gap-6 mt-8 animate-fade-in ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
             {/* Typography */}
             <div
                 className={`p-6 ${cardStyle}`}

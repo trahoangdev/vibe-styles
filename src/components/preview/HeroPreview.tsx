@@ -4,14 +4,15 @@ interface HeroPreviewProps {
     style: DesignStyle;
     buttonStyle: string;
     inputStyle: string;
+    isMobile?: boolean;
 }
 
-export function HeroPreview({ style, buttonStyle, inputStyle }: HeroPreviewProps) {
+export function HeroPreview({ style, buttonStyle, inputStyle, isMobile = false }: HeroPreviewProps) {
     return (
         <div className="lg:col-span-2 animate-slide-in">
             {/* Badge */}
             <div
-                className="inline-block px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] mb-8 shadow-sm border border-border"
+                className={`inline-block px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] ${isMobile ? 'mb-4' : 'mb-8'} shadow-sm border border-border`}
                 style={{
                     backgroundColor: `hsl(${style.colors.muted})`,
                     color: `hsl(${style.colors.mutedForeground})`,
@@ -23,7 +24,7 @@ export function HeroPreview({ style, buttonStyle, inputStyle }: HeroPreviewProps
 
             {/* Heading */}
             <h2
-                className="text-6xl lg:text-7xl leading-[0.9] mb-8 tracking-tighter"
+                className={`${isMobile ? 'text-4xl mb-4' : 'text-6xl lg:text-7xl mb-8'} leading-[0.9] tracking-tighter`}
                 style={{ fontFamily: style.fonts.heading, fontWeight: 'var(--style-heading-weight)' }}
             >
                 The Next<br />
@@ -32,7 +33,7 @@ export function HeroPreview({ style, buttonStyle, inputStyle }: HeroPreviewProps
 
             {/* Description */}
             <p
-                className="text-xl mb-10 max-w-lg leading-relaxed opacity-80 font-medium"
+                className={`text-xl ${isMobile ? 'mb-6' : 'mb-10'} max-w-lg leading-relaxed opacity-80 font-medium`}
                 style={{ color: `hsl(${style.colors.mutedForeground})` }}
             >
                 Experience the {style.name} aesthetic. A meticulous blend of radical typography and functional density, crafted for the modern web.

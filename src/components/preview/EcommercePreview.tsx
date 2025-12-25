@@ -4,9 +4,10 @@ import { ShoppingCart, Heart, Star, Filter, ArrowRight } from 'lucide-react';
 interface EcommercePreviewProps {
     style: DesignStyle;
     cardStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function EcommercePreview({ style, cardStyle }: EcommercePreviewProps) {
+export function EcommercePreview({ style, cardStyle, isMobile = false }: EcommercePreviewProps) {
     const products = [
         { name: 'Vibe Core Node', price: '$299', rating: 5, category: 'Hardware', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=500' },
         { name: 'Neural Link v2', price: '$89', rating: 4, category: 'Interface', image: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?auto=format&fit=crop&q=80&w=500' },
@@ -38,7 +39,7 @@ export function EcommercePreview({ style, cardStyle }: EcommercePreviewProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className={`grid gap-6 ${isMobile ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
                 {products.map((product, i) => (
                     <div
                         key={i}

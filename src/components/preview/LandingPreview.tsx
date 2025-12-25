@@ -8,9 +8,10 @@ interface LandingPreviewProps {
     style: DesignStyle;
     cardStyle: string;
     buttonStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function LandingPreview({ style, cardStyle, buttonStyle }: LandingPreviewProps) {
+export function LandingPreview({ style, cardStyle, buttonStyle, isMobile = false }: LandingPreviewProps) {
     return (
         <div className="mt-20 border-t border-border/30 pt-20 animate-fade-in">
             <div className="text-center mb-16">
@@ -29,7 +30,7 @@ export function LandingPreview({ style, cardStyle, buttonStyle }: LandingPreview
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
                 {[
                     {
                         title: 'Neural Sync',

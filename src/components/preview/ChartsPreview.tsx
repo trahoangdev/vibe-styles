@@ -8,9 +8,10 @@ import { TrendingUp, Activity, PieChart as PieChartIcon, ArrowUpRight } from 'lu
 interface ChartsPreviewProps {
     style: DesignStyle;
     cardStyle: string;
+    isMobile?: boolean; // Added isMobile prop
 }
 
-export function ChartsPreview({ style, cardStyle }: ChartsPreviewProps) {
+export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPreviewProps) {
     const areaData = [
         { name: 'Mon', value: 4000, uv: 2400 },
         { name: 'Tue', value: 3000, uv: 1398 },
@@ -79,7 +80,7 @@ export function ChartsPreview({ style, cardStyle }: ChartsPreviewProps) {
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Real-time Visualization</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
                 {/* Area Chart Card */}
                 <div
                     className={`p-6 ${cardStyle} min-h-[300px] flex flex-col`}
@@ -182,7 +183,7 @@ export function ChartsPreview({ style, cardStyle }: ChartsPreviewProps) {
                     </div>
 
                     {/* Pie Chart Row */}
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
                         <div
                             className={`p-6 ${cardStyle} flex flex-col items-center justify-center`}
                             style={{
