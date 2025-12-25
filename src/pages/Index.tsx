@@ -174,9 +174,7 @@ const Index = () => {
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
-              <span className="text-background text-sm font-semibold">V</span>
-            </div>
+            <img src="/logo.png" alt="Vibe Styles" className="w-7 h-7 rounded-lg object-contain" />
             <span className="font-semibold text-sm">{selectedStyle.name}</span>
           </div>
         </div>

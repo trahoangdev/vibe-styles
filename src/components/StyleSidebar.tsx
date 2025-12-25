@@ -110,9 +110,11 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
           <div className="p-3 border-b border-border flex justify-center">
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="w-10 h-10 rounded-lg bg-foreground flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
-                  <span className="text-background text-lg font-semibold">V</span>
-                </div>
+                <img
+                  src="/logo.png"
+                  alt="Vibe Styles"
+                  className="w-10 h-10 rounded-lg object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                />
               </TooltipTrigger>
               <TooltipContent side="right">Vibe Styles</TooltipContent>
             </Tooltip>
@@ -164,9 +166,11 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
         <div className="p-5 border-b border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-foreground flex items-center justify-center shadow-soft">
-                <span className="text-background text-lg font-semibold">V</span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Vibe Styles"
+                className="w-9 h-9 rounded-lg object-contain shadow-soft"
+              />
               <div>
                 <h1 className="font-semibold text-foreground tracking-tight">Vibe Styles</h1>
                 <p className="text-xs text-muted-foreground">Design System Explorer</p>

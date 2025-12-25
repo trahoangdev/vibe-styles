@@ -90,11 +90,29 @@ export function StylePreview({
     '--style-heading-weight': style.fonts.headingWeight || '700',
     '--style-body-weight': style.fonts.bodyWeight || '400',
     '--style-shadow-opacity': style.shadowStrength ?? 0.2,
+
+    // Map standard Tailwind variables to the preview style
+    '--primary': style.colors.primary,
+    '--primary-foreground': style.colors.primaryForeground,
+    '--muted': style.colors.muted,
+    '--muted-foreground': style.colors.mutedForeground,
+    '--accent': style.colors.accent,
+    '--accent-foreground': style.colors.accentForeground,
+    '--background': style.colors.background,
+    '--foreground': style.colors.foreground,
+    '--card': style.colors.surface,
+    '--card-foreground': style.colors.surfaceForeground,
+    '--popover': style.colors.surface,
+    '--popover-foreground': style.colors.surfaceForeground,
+    '--border': style.colors.border,
+    '--input': style.colors.border,
+    '--ring': style.colors.primary,
+    '--radius': style.radius,
   } as React.CSSProperties), [style]);
 
   const isNeoBrutalism = style.id === 'neo-brutalism';
   const isSwissMinimal = style.id === 'swiss-minimal';
-  const isPersonal = style.id === 'personal';
+
 
   const cardStyle = useMemo(() => {
     if (isNeoBrutalism) return 'border-2 border-foreground shadow-[4px_4px_0_0_hsl(var(--style-fg))] transition-all duration-300 hover:shadow-[6px_6px_0_0_hsl(var(--style-fg))] hover:-translate-x-0.5 hover:-translate-y-0.5';
