@@ -1,11 +1,12 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { StyleSidebar, StyleSidebarRef } from '@/components/StyleSidebar';
 import { StylePreview } from '@/components/StylePreview';
-import { ThemeEditor, type ThemeOverrides } from '@/components/ThemeEditor';
+import { ThemeEditor } from '@/components/ThemeEditor';
 import { KeyboardShortcutsPanel } from '@/components/KeyboardShortcutsPanel';
 import { OnboardingTour } from '@/components/OnboardingTour';
 import { CommandPalette } from '@/components/CommandPalette';
-import { designStyles } from '@/lib/designStyles';
+import { designStyles, ColorBlindnessMode, type ThemeOverrides } from '@/lib/designStyles';
+import { generateRandomTheme } from '@/lib/themeGenerator';
 import { toast } from '@/hooks/use-toast';
 import { getFullExportCode } from '@/lib/designStyles';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
@@ -13,6 +14,13 @@ import { useTheme } from '@/hooks/use-theme';
 import { useUndoRedo } from '@/hooks/use-undo-redo';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+
 
 const Index = () => {
   const [selectedStyle, setSelectedStyle] = useState(() => {
@@ -32,6 +40,9 @@ const Index = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDebugMode, setIsDebugMode] = useState(false);
+  const [colorBlindnessMode, setColorBlindnessMode] = useState<ColorBlindnessMode>('none');
+  const [isMobile, setIsMobile] = useState(false);
+
 
   // Undo/Redo for theme overrides
   const initialOverrides = useMemo(() => {
@@ -108,6 +119,15 @@ const Index = () => {
     });
   };
 
+  const handleRandomize = () => {
+    const randomTheme = generateRandomTheme();
+    setThemeOverrides(randomTheme);
+    toast({
+      title: "Feeling Lucky!",
+      description: "Generated a new random theme based on color theory.",
+    });
+  };
+
   const navigateStyle = useCallback((direction: 'prev' | 'next') => {
     const newIndex = direction === 'prev'
       ? (currentStyleIndex - 1 + designStyles.length) % designStyles.length
@@ -154,10 +174,16 @@ const Index = () => {
   // Close mobile menu on resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
         setIsMobileMenuOpen(false);
       }
     };
+
+    // Initial check
+    handleResize();
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -229,16 +255,16 @@ const Index = () => {
           style={effectiveStyle}
           isFullScreen={isFullScreen}
           onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
-          // update shortcuts
           onToggleEditor={() => setShowEditor(!showEditor)}
           showEditorButton={!isFullScreen}
           isEditorOpen={showEditor}
           isDebugMode={isDebugMode}
           onToggleDebugMode={() => setIsDebugMode(!isDebugMode)}
+          colorBlindnessMode={colorBlindnessMode}
         />
 
-        {/* Theme Editor Panel */}
-        {showEditor && !isFullScreen && (
+        {/* Theme Editor Panel - Desktop */}
+        {!isMobile && showEditor && !isFullScreen && (
           <div className="hidden md:block animate-slide-in">
             <ThemeEditor
               baseColors={{
@@ -262,8 +288,51 @@ const Index = () => {
               onUndo={undoTheme}
               onRedo={redoTheme}
               historyInfo={{ current: currentIndex, total: historyLength }}
+              colorBlindnessMode={colorBlindnessMode}
+              onColorBlindnessModeChange={setColorBlindnessMode}
+              onRandomize={handleRandomize}
             />
           </div>
+        )}
+
+        {/* Theme Editor Panel - Mobile Drawer */}
+        {isMobile && (
+          <Drawer open={showEditor} onOpenChange={setShowEditor}>
+            <DrawerContent className="h-[85vh] outline-none">
+              <DrawerHeader className="text-left border-b border-border/10 pb-4">
+                <DrawerTitle className="font-black uppercase tracking-widest text-sm opacity-60">Theme Editor</DrawerTitle>
+              </DrawerHeader>
+              <div className="flex-1 overflow-hidden h-full">
+                <ThemeEditor
+                  baseColors={{
+                    primary: selectedStyle.colors.primary,
+                    accent: selectedStyle.colors.accent,
+                    muted: selectedStyle.colors.muted,
+                    background: selectedStyle.colors.background,
+                    foreground: selectedStyle.colors.foreground,
+                    surface: selectedStyle.colors.surface,
+                  }}
+                  baseFonts={{
+                    heading: selectedStyle.fonts.heading,
+                    body: selectedStyle.fonts.body,
+                  }}
+                  baseRadius={selectedStyle.radius}
+                  overrides={themeOverrides}
+                  onOverridesChange={setThemeOverrides}
+                  onReset={handleResetOverrides}
+                  canUndo={canUndo}
+                  canRedo={canRedo}
+                  onUndo={undoTheme}
+                  onRedo={redoTheme}
+                  historyInfo={{ current: currentIndex, total: historyLength }}
+                  colorBlindnessMode={colorBlindnessMode}
+                  onColorBlindnessModeChange={setColorBlindnessMode}
+                  className="w-full border-0"
+                  onRandomize={handleRandomize}
+                />
+              </div>
+            </DrawerContent>
+          </Drawer>
         )}
       </div>
 

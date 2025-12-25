@@ -51,7 +51,7 @@ export function DevicePreviewControls({ style, devicePreview, setDevicePreview }
                 </button>
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-4 hidden sm:inline">
-                Simulated Viewport: {devicePreview === 'mobile' ? '375px' : '768px'}
+                Simulated Viewport: {devicePreview === 'mobile' ? '390px' : '768px'}
             </span>
         </div>
     );

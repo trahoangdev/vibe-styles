@@ -43,6 +43,34 @@ export interface DesignStyle {
   characteristics: string[];
 }
 
+export interface ThemeOverrides {
+  colors?: {
+    primary?: string;
+    accent?: string;
+    muted?: string;
+    background?: string;
+    foreground?: string;
+    surface?: string;
+  };
+  fonts?: {
+    heading?: string;
+    body?: string;
+    headingWeight?: string;
+    bodyWeight?: string;
+  };
+  radius?: string;
+  shadowStrength?: number;
+}
+
+export interface Preset {
+  id: string;
+  name: string;
+  overrides: ThemeOverrides;
+  createdAt: number;
+}
+
+export type ColorBlindnessMode = 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'achromatopsia';
+
 export const designStyles: DesignStyle[] = [
   {
     id: 'cupertino',

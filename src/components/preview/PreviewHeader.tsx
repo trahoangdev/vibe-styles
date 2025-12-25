@@ -4,7 +4,6 @@ import {
     Smartphone, Tablet, Monitor, Bug,
     Sun, Moon
 } from 'lucide-react';
-import { useTheme } from '@/hooks/use-theme';
 
 interface PreviewHeaderProps {
     style: DesignStyle;
@@ -17,6 +16,8 @@ interface PreviewHeaderProps {
     onToggleFullScreen?: () => void;
     isDebugMode?: boolean;
     onToggleDebugMode?: () => void;
+    previewTheme: 'light' | 'dark';
+    onTogglePreviewTheme: () => void;
 }
 
 export function PreviewHeader({
@@ -29,9 +30,10 @@ export function PreviewHeader({
     isFullScreen,
     onToggleFullScreen,
     isDebugMode,
-    onToggleDebugMode
+    onToggleDebugMode,
+    previewTheme,
+    onTogglePreviewTheme
 }: PreviewHeaderProps) {
-    const { theme, toggleTheme } = useTheme();
 
     return (
         <header className={`sticky top-0 z-10 py-4 flex items-center justify-between border-b border-[hsl(var(--style-border))] bg-[hsl(var(--style-bg))] backdrop-blur-md bg-opacity-80 ${devicePreview === 'mobile' ? 'px-4' : 'px-8'}`}>
@@ -140,15 +142,15 @@ export function PreviewHeader({
 
 
                 <button
-                    onClick={toggleTheme}
+                    onClick={onTogglePreviewTheme}
                     className="p-2 rounded-lg hover:bg-muted transition-all duration-300 hover:scale-110"
                     style={{ borderRadius: style.radius }}
-                    title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+                    title={`Switch to ${previewTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
                 >
-                    {theme === 'dark' ? (
-                        <Sun className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
-                    ) : (
+                    {previewTheme === 'dark' ? (
                         <Moon className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                    ) : (
+                        <Sun className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                     )}
                 </button>
 

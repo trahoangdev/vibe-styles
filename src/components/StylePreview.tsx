@@ -1,5 +1,6 @@
-import { type DesignStyle } from '@/lib/designStyles';
-import { useMemo, useState, useEffect } from 'react';
+import { type DesignStyle, ColorBlindnessMode } from '@/lib/designStyles';
+import { useMemo, useState, useEffect, lazy, Suspense } from 'react';
+import { smartInvert } from '@/lib/colorUtils';
 import { PreviewHeader } from './preview/PreviewHeader';
 import { HeroPreview } from './preview/HeroPreview';
 import { AuthPreview } from './preview/AuthPreview';
@@ -8,10 +9,15 @@ import { CommunicationPreview } from './preview/CommunicationPreview';
 import { DesignSystemSpecs } from './preview/DesignSystemSpecs';
 import { DevicePreviewControls } from './preview/DevicePreviewControls';
 import { LandingPreview } from './preview/LandingPreview';
-import { EcommercePreview } from './preview/EcommercePreview';
-import { BlogPreview } from './preview/BlogPreview';
-import { TablePreview } from './preview/TablePreview';
-import { ChartsPreview } from './preview/ChartsPreview';
+
+// Lazy load heavy components to optimize bundle size
+const EcommercePreview = lazy(() => import('./preview/EcommercePreview').then(m => ({ default: m.EcommercePreview })));
+const BlogPreview = lazy(() => import('./preview/BlogPreview').then(m => ({ default: m.BlogPreview })));
+const TablePreview = lazy(() => import('./preview/TablePreview').then(m => ({ default: m.TablePreview })));
+const KanbanPreview = lazy(() => import('./preview/KanbanPreview').then(m => ({ default: m.KanbanPreview })));
+const CalendarPreview = lazy(() => import('./preview/CalendarPreview').then(m => ({ default: m.CalendarPreview })));
+const DashboardPreview = lazy(() => import('./preview/DashboardPreview').then(m => ({ default: m.DashboardPreview })));
+const ChartsPreview = lazy(() => import('./preview/ChartsPreview').then(m => ({ default: m.ChartsPreview })));
 
 type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
@@ -30,6 +36,7 @@ interface StylePreviewProps {
   isEditorOpen?: boolean;
   isDebugMode?: boolean;
   onToggleDebugMode?: () => void;
+  colorBlindnessMode?: ColorBlindnessMode;
 }
 
 export function StylePreview({
@@ -40,14 +47,20 @@ export function StylePreview({
   showEditorButton = false,
   isEditorOpen = false,
   isDebugMode = false,
-  onToggleDebugMode
+  onToggleDebugMode,
+  colorBlindnessMode = 'none'
 }: StylePreviewProps) {
   const [devicePreview, setDevicePreview] = useState<DeviceType>('desktop');
   const [debugInfo, setDebugInfo] = useState<{ x: number, y: number, label: string } | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>(style.theme);
+
+  // Sync preview theme when style changes
+  useEffect(() => {
+    setPreviewTheme(style.theme);
+  }, [style.id, style.theme]);
 
   // Debug mode hover listener
   useEffect(() => {
-    // Only remove helper if we are NOT in debug mode
     if (!isDebugMode) {
       setDebugInfo(null);
       return;
@@ -57,7 +70,6 @@ export function StylePreview({
       const target = e.target as HTMLElement;
       if (!target) return;
 
-      // Simple heuristic to identify key elements
       let label = target.tagName.toLowerCase();
       if (target.className && typeof target.className === 'string') {
         const classes = target.className.split(' ').filter(c => !c.startsWith('hover:') && !c.startsWith('transition-'));
@@ -71,44 +83,56 @@ export function StylePreview({
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [isDebugMode]);
 
+  const activeColors = useMemo(() => {
+    if (previewTheme === style.theme) return style.colors;
+
+    // Smart invert for preview mode mismatch
+    const inverted: Record<string, string> = {};
+    Object.entries(style.colors).forEach(([key, value]) => {
+      inverted[key] = smartInvert(value);
+    });
+
+    return inverted as typeof style.colors;
+  }, [style.colors, style.theme, previewTheme]);
+
   const cssVars = useMemo(() => ({
-    '--style-primary': style.colors.primary,
-    '--style-primary-foreground': style.colors.primaryForeground,
-    '--style-accent': style.colors.accent,
-    '--style-accent-foreground': style.colors.accentForeground,
-    '--style-surface': style.colors.surface,
-    '--style-surface-foreground': style.colors.surfaceForeground,
-    '--style-muted': style.colors.muted,
-    '--style-muted-foreground': style.colors.mutedForeground,
-    '--style-border': style.colors.border,
-    '--style-success': style.colors.success,
-    '--style-warning': style.colors.warning,
-    '--style-error': style.colors.error,
+    '--style-primary': activeColors.primary,
+    '--style-primary-foreground': activeColors.primaryForeground,
+    '--style-accent': activeColors.accent,
+    '--style-accent-foreground': activeColors.accentForeground,
+    '--style-surface': activeColors.surface,
+    '--style-surface-foreground': activeColors.surfaceForeground,
+    '--style-muted': activeColors.muted,
+    '--style-muted-foreground': activeColors.mutedForeground,
+    '--style-border': activeColors.border,
+    '--style-success': activeColors.success,
+    '--style-warning': activeColors.warning,
+    '--style-error': activeColors.error,
     '--style-radius': style.radius,
-    '--style-bg': style.colors.background,
-    '--style-fg': style.colors.foreground,
+    '--style-bg': activeColors.background,
+    '--style-fg': activeColors.foreground,
     '--style-heading-weight': style.fonts.headingWeight || '700',
     '--style-body-weight': style.fonts.bodyWeight || '400',
     '--style-shadow-opacity': style.shadowStrength ?? 0.2,
 
     // Map standard Tailwind variables to the preview style
-    '--primary': style.colors.primary,
-    '--primary-foreground': style.colors.primaryForeground,
-    '--muted': style.colors.muted,
-    '--muted-foreground': style.colors.mutedForeground,
-    '--accent': style.colors.accent,
-    '--accent-foreground': style.colors.accentForeground,
-    '--background': style.colors.background,
-    '--foreground': style.colors.foreground,
-    '--card': style.colors.surface,
-    '--card-foreground': style.colors.surfaceForeground,
-    '--popover': style.colors.surface,
-    '--popover-foreground': style.colors.surfaceForeground,
-    '--border': style.colors.border,
-    '--input': style.colors.border,
-    '--ring': style.colors.primary,
+    '--primary': activeColors.primary,
+    '--primary-foreground': activeColors.primaryForeground,
+    '--muted': activeColors.muted,
+    '--muted-foreground': activeColors.mutedForeground,
+    '--accent': activeColors.accent,
+    '--accent-foreground': activeColors.accentForeground,
+    '--background': activeColors.background,
+    '--foreground': activeColors.foreground,
+    '--card': activeColors.surface,
+    '--card-foreground': activeColors.surfaceForeground,
+    '--popover': activeColors.surface,
+    '--popover-foreground': activeColors.surfaceForeground,
+    '--border': activeColors.border,
+    '--input': activeColors.border,
+    '--ring': activeColors.primary,
     '--radius': style.radius,
-  } as React.CSSProperties), [style]);
+  } as React.CSSProperties), [activeColors, style.radius, style.fonts, style.shadowStrength]);
 
   const isNeoBrutalism = style.id === 'neo-brutalism';
   const isSwissMinimal = style.id === 'swiss-minimal';
@@ -133,11 +157,29 @@ export function StylePreview({
       className="flex-1 overflow-y-auto transition-all duration-500 ease-in-out scroll-smooth"
       style={{
         ...cssVars,
-        backgroundColor: `hsl(${style.colors.background})`,
-        color: `hsl(${style.colors.foreground})`,
+        backgroundColor: `hsl(${activeColors.background})`,
+        color: `hsl(${activeColors.foreground})`,
         fontFamily: style.fonts.body,
+        filter: colorBlindnessMode !== 'none' ? `url(#${colorBlindnessMode})` : undefined,
       }}
     >
+      <svg className="hidden">
+        <defs>
+          <filter id="protanopia">
+            <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0  0.558, 0.442, 0, 0, 0  0, 0.242, 0.758, 0, 0  0, 0, 0, 1, 0" />
+          </filter>
+          <filter id="deuteranopia">
+            <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0  0.7, 0.3, 0, 0, 0  0, 0.3, 0.7, 0, 0  0, 0, 0, 1, 0" />
+          </filter>
+          <filter id="tritanopia">
+            <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0  0, 0.433, 0.567, 0, 0  0, 0.475, 0.525, 0, 0  0, 0, 0, 1, 0" />
+          </filter>
+          <filter id="achromatopsia">
+            <feColorMatrix type="matrix" values="0.299, 0.587, 0.114, 0, 0  0.299, 0.587, 0.114, 0, 0  0.299, 0.587, 0.114, 0, 0  0, 0, 0, 1, 0" />
+          </filter>
+        </defs>
+      </svg>
+
       <DevicePreviewControls
         style={style}
         devicePreview={devicePreview}
@@ -149,7 +191,7 @@ export function StylePreview({
         style={{
           maxWidth: deviceWidths[devicePreview],
           minHeight: devicePreview !== 'desktop' ? 'calc(100vh - 120px)' : 'auto',
-          backgroundColor: `hsl(${style.colors.background})`,
+          backgroundColor: `hsl(${activeColors.background})`,
         }}
       >
         <PreviewHeader
@@ -161,6 +203,10 @@ export function StylePreview({
           onToggleEditor={onToggleEditor}
           isFullScreen={isFullScreen}
           onToggleFullScreen={onToggleFullScreen}
+          isDebugMode={isDebugMode}
+          onToggleDebugMode={onToggleDebugMode}
+          previewTheme={previewTheme}
+          onTogglePreviewTheme={() => setPreviewTheme(t => t === 'light' ? 'dark' : 'light')}
         />
 
         <main
@@ -205,15 +251,15 @@ export function StylePreview({
             <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10 opacity-30">
               <div
                 className="absolute top-0 left-1/4 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"
-                style={{ backgroundColor: `hsl(${style.colors.primary})` }}
+                style={{ backgroundColor: `hsl(${activeColors.primary})` }}
               />
               <div
                 className="absolute top-0 right-1/4 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"
-                style={{ backgroundColor: `hsl(${style.colors.accent})` }}
+                style={{ backgroundColor: `hsl(${activeColors.accent})` }}
               />
               <div
                 className="absolute -bottom-8 left-1/3 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"
-                style={{ backgroundColor: `hsl(${style.colors.primary})` }}
+                style={{ backgroundColor: `hsl(${activeColors.primary})` }}
               />
             </div>
 
@@ -249,29 +295,61 @@ export function StylePreview({
             isMobile={devicePreview === 'mobile'}
           />
 
-          <EcommercePreview
-            style={style}
-            cardStyle={cardStyle}
-            isMobile={devicePreview === 'mobile'}
-          />
+          <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl border border-dashed border-border/30 flex items-center justify-center"><p className="text-muted-foreground text-xs font-bold tracking-widest uppercase opacity-50">Loading Preview...</p></div>}>
+            <EcommercePreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
 
-          <BlogPreview
-            style={style}
-            cardStyle={cardStyle}
-            isMobile={devicePreview === 'mobile'}
-          />
+          <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
+            <BlogPreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
 
-          <TablePreview
-            style={style}
-            cardStyle={cardStyle}
-            isMobile={devicePreview === 'mobile'}
-          />
+          <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
+            <TablePreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
 
-          <ChartsPreview
-            style={style}
-            cardStyle={cardStyle}
-            isMobile={devicePreview === 'mobile'}
-          />
+          <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
+            <KanbanPreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
+
+          <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
+            <CalendarPreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
+
+          <Suspense fallback={<div className="w-full h-[600px] bg-muted/5 animate-pulse rounded-3xl" />}>
+            <DashboardPreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
+
+          <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
+            <ChartsPreview
+              style={style}
+              cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
         </main>
 
         <footer className="mt-20 p-12 border-t border-border/30 opacity-40 text-center">
