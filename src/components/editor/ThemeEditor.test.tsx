@@ -22,8 +22,7 @@ describe('ThemeEditor Integration', () => {
                 history: [{}],
                 historyIndex: 0,
                 // Reset other UI states
-                expandedSection: 'colors'
-            } as any);
+            });
         });
     });
 

@@ -9,6 +9,9 @@ import { StatsPreview } from './StatsPreview';
 import { CommunicationPreview } from './CommunicationPreview';
 import { DesignSystemSpecs } from './DesignSystemSpecs';
 import { DevicePreviewControls } from './DevicePreviewControls';
+import { PrinciplesPreview } from './PrinciplesPreview';
+import { MusicPlayerPreview } from './MusicPlayerPreview';
+import { FintechDashboardPreview } from './FintechDashboardPreview';
 import { LandingPreview } from './LandingPreview';
 
 // Lazy load heavy components to optimize bundle size
@@ -94,7 +97,7 @@ export function StylePreview({
     });
 
     return inverted as unknown as typeof style.colors;
-  }, [style.colors, style.theme, previewTheme]);
+  }, [style, previewTheme]);
 
   const cssVars = useMemo(() => ({
     '--style-primary': activeColors.primary,
@@ -286,6 +289,22 @@ export function StylePreview({
             style={activeStyle}
             cardStyle={cardStyle}
             buttonStyle={buttonStyle}
+            isMobile={devicePreview === 'mobile'}
+          />
+
+          <PrinciplesPreview
+            style={activeStyle}
+            cardStyle={cardStyle}
+            isMobile={devicePreview === 'mobile'}
+          />
+
+          <MusicPlayerPreview
+            style={activeStyle}
+            isMobile={devicePreview === 'mobile'}
+          />
+
+          <FintechDashboardPreview
+            style={activeStyle}
             isMobile={devicePreview === 'mobile'}
           />
 

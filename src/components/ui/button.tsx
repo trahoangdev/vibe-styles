@@ -54,8 +54,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <motion.button
         className={cn(buttonVariants({ variant, size, className }))}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={ref as any}
         whileTap={{ scale: 0.98 }}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {...(props as any)}
       />
     );
@@ -63,4 +65,5 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 Button.displayName = "Button";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants };

@@ -65,7 +65,7 @@ export function CommandPalette({
 
         document.addEventListener("keydown", down);
         return () => document.removeEventListener("keydown", down);
-    }, [onOpenChange]);
+    }, [onOpenChange, open]);
 
     const runCommand = (command: () => void) => {
         command();
