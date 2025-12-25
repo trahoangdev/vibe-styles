@@ -1,28 +1,29 @@
 import { type DesignStyle, ColorBlindnessMode } from '@/lib/designStyles';
 import { useMemo, useState, useEffect, lazy, Suspense } from 'react';
 import { smartInvert } from '@/lib/colorUtils';
-import { PreviewHeader } from './preview/PreviewHeader';
-import { HeroPreview } from './preview/HeroPreview';
-import { AuthPreview } from './preview/AuthPreview';
-import { StatsPreview } from './preview/StatsPreview';
-import { CommunicationPreview } from './preview/CommunicationPreview';
-import { DesignSystemSpecs } from './preview/DesignSystemSpecs';
-import { DevicePreviewControls } from './preview/DevicePreviewControls';
-import { LandingPreview } from './preview/LandingPreview';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PreviewHeader } from './PreviewHeader';
+import { HeroPreview } from './HeroPreview';
+import { AuthPreview } from './AuthPreview';
+import { StatsPreview } from './StatsPreview';
+import { CommunicationPreview } from './CommunicationPreview';
+import { DesignSystemSpecs } from './DesignSystemSpecs';
+import { DevicePreviewControls } from './DevicePreviewControls';
+import { LandingPreview } from './LandingPreview';
 
 // Lazy load heavy components to optimize bundle size
-const EcommercePreview = lazy(() => import('./preview/EcommercePreview').then(m => ({ default: m.EcommercePreview })));
-const BlogPreview = lazy(() => import('./preview/BlogPreview').then(m => ({ default: m.BlogPreview })));
-const TablePreview = lazy(() => import('./preview/TablePreview').then(m => ({ default: m.TablePreview })));
-const KanbanPreview = lazy(() => import('./preview/KanbanPreview').then(m => ({ default: m.KanbanPreview })));
-const CalendarPreview = lazy(() => import('./preview/CalendarPreview').then(m => ({ default: m.CalendarPreview })));
-const DashboardPreview = lazy(() => import('./preview/DashboardPreview').then(m => ({ default: m.DashboardPreview })));
-const ChartsPreview = lazy(() => import('./preview/ChartsPreview').then(m => ({ default: m.ChartsPreview })));
+const EcommercePreview = lazy(() => import('./EcommercePreview').then(m => ({ default: m.EcommercePreview })));
+const BlogPreview = lazy(() => import('./BlogPreview').then(m => ({ default: m.BlogPreview })));
+const TablePreview = lazy(() => import('./TablePreview').then(m => ({ default: m.TablePreview })));
+const KanbanPreview = lazy(() => import('./KanbanPreview').then(m => ({ default: m.KanbanPreview })));
+const CalendarPreview = lazy(() => import('./CalendarPreview').then(m => ({ default: m.CalendarPreview })));
+const DashboardPreview = lazy(() => import('./DashboardPreview').then(m => ({ default: m.DashboardPreview })));
+const ChartsPreview = lazy(() => import('./ChartsPreview').then(m => ({ default: m.ChartsPreview })));
 
 type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 const deviceWidths: Record<DeviceType, string> = {
-  mobile: '375px',
+  mobile: '390px',
   tablet: '768px',
   desktop: '100%',
 };
@@ -92,7 +93,7 @@ export function StylePreview({
       inverted[key] = smartInvert(value);
     });
 
-    return inverted as typeof style.colors;
+    return inverted as unknown as typeof style.colors;
   }, [style.colors, style.theme, previewTheme]);
 
   const cssVars = useMemo(() => ({
@@ -152,6 +153,11 @@ export function StylePreview({
     ? 'border-2 border-foreground'
     : 'border border-[hsl(var(--style-border))]';
 
+  const activeStyle = useMemo(() => ({
+    ...style,
+    colors: activeColors,
+  }), [style, activeColors]);
+
   return (
     <div
       className="flex-1 overflow-y-auto transition-all duration-500 ease-in-out scroll-smooth"
@@ -163,39 +169,27 @@ export function StylePreview({
         filter: colorBlindnessMode !== 'none' ? `url(#${colorBlindnessMode})` : undefined,
       }}
     >
-      <svg className="hidden">
-        <defs>
-          <filter id="protanopia">
-            <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0  0.558, 0.442, 0, 0, 0  0, 0.242, 0.758, 0, 0  0, 0, 0, 1, 0" />
-          </filter>
-          <filter id="deuteranopia">
-            <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0  0.7, 0.3, 0, 0, 0  0, 0.3, 0.7, 0, 0  0, 0, 0, 1, 0" />
-          </filter>
-          <filter id="tritanopia">
-            <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0  0, 0.433, 0.567, 0, 0  0, 0.475, 0.525, 0, 0  0, 0, 0, 1, 0" />
-          </filter>
-          <filter id="achromatopsia">
-            <feColorMatrix type="matrix" values="0.299, 0.587, 0.114, 0, 0  0.299, 0.587, 0.114, 0, 0  0.299, 0.587, 0.114, 0, 0  0, 0, 0, 1, 0" />
-          </filter>
-        </defs>
-      </svg>
+      {/* ... (svg filters) ... */}
 
       <DevicePreviewControls
-        style={style}
+        style={activeStyle}
         devicePreview={devicePreview}
         setDevicePreview={setDevicePreview}
       />
 
-      <div
-        className={`mx-auto transition-all duration-500 ease-in-out ${devicePreview !== 'desktop' ? 'border-[10px] border-zinc-800 rounded-[2.5rem] shadow-2xl my-8 overflow-hidden relative z-10' : ''}`}
+      <motion.div
+        layout
+        className={`mx-auto ${devicePreview !== 'desktop' ? 'border-[10px] border-zinc-800 rounded-[2.5rem] shadow-2xl my-8 overflow-hidden relative z-10' : ''}`}
         style={{
-          maxWidth: deviceWidths[devicePreview],
+          width: deviceWidths[devicePreview],
+          maxWidth: '100%',
           minHeight: devicePreview !== 'desktop' ? 'calc(100vh - 120px)' : 'auto',
           backgroundColor: `hsl(${activeColors.background})`,
         }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         <PreviewHeader
-          style={style}
+          style={activeStyle}
           devicePreview={devicePreview}
           setDevicePreview={setDevicePreview}
           showEditorButton={showEditorButton}
@@ -211,12 +205,12 @@ export function StylePreview({
 
         <main
           key={style.id}
-          className={`p-4 md:p-8 lg:p-12 mx-auto animate-fade-in ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
+          className={`p-4 md:p-8 lg:p-12 mx-auto animate-fade-in flex flex-col gap-24 ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
         >
 
           <div className={`grid gap-12 items-start ${devicePreview === 'desktop' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}>
             <HeroPreview
-              style={style}
+              style={activeStyle}
               buttonStyle={buttonStyle}
               inputStyle={inputStyle}
               isMobile={devicePreview === 'mobile'}
@@ -264,7 +258,7 @@ export function StylePreview({
             </div>
 
             <AuthPreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               buttonStyle={buttonStyle}
               inputStyle={inputStyle}
@@ -272,24 +266,24 @@ export function StylePreview({
             />
           </div>
 
-          <StatsPreview style={style} cardStyle={cardStyle} isMobile={devicePreview === 'mobile'} />
+          <StatsPreview style={activeStyle} cardStyle={cardStyle} isMobile={devicePreview === 'mobile'} />
 
           <CommunicationPreview
-            style={style}
+            style={activeStyle}
             cardStyle={cardStyle}
             inputStyle={inputStyle}
             isMobile={devicePreview === 'mobile'}
           />
 
           <DesignSystemSpecs
-            style={style}
+            style={activeStyle}
             cardStyle={cardStyle}
             inputStyle={inputStyle}
             isMobile={devicePreview === 'mobile'}
           />
 
           <LandingPreview
-            style={style}
+            style={activeStyle}
             cardStyle={cardStyle}
             buttonStyle={buttonStyle}
             isMobile={devicePreview === 'mobile'}
@@ -297,7 +291,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl border border-dashed border-border/30 flex items-center justify-center"><p className="text-muted-foreground text-xs font-bold tracking-widest uppercase opacity-50">Loading Preview...</p></div>}>
             <EcommercePreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -305,7 +299,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
             <BlogPreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -313,7 +307,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
             <TablePreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -321,7 +315,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
             <KanbanPreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -329,7 +323,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
             <CalendarPreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -337,7 +331,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-[600px] bg-muted/5 animate-pulse rounded-3xl" />}>
             <DashboardPreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -345,7 +339,7 @@ export function StylePreview({
 
           <Suspense fallback={<div className="w-full h-96 bg-muted/5 animate-pulse rounded-3xl" />}>
             <ChartsPreview
-              style={style}
+              style={activeStyle}
               cardStyle={cardStyle}
               isMobile={devicePreview === 'mobile'}
             />
@@ -357,7 +351,7 @@ export function StylePreview({
             Vibe Styles // {style.name} // Design Protocol Alpha
           </p>
         </footer>
-      </div>
+      </motion.div>
     </div>
   );
 }

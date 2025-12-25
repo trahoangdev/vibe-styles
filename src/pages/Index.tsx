@@ -1,17 +1,16 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { StyleSidebar, StyleSidebarRef } from '@/components/StyleSidebar';
-import { StylePreview } from '@/components/StylePreview';
-import { ThemeEditor } from '@/components/ThemeEditor';
+import { StylePreview } from '@/components/preview/StylePreview';
+import { ThemeEditor } from '@/components/editor/ThemeEditor';
 import { KeyboardShortcutsPanel } from '@/components/KeyboardShortcutsPanel';
 import { OnboardingTour } from '@/components/OnboardingTour';
 import { CommandPalette } from '@/components/CommandPalette';
-import { designStyles, ColorBlindnessMode, type ThemeOverrides } from '@/lib/designStyles';
-import { generateRandomTheme } from '@/lib/themeGenerator';
+import { designStyles } from '@/lib/designStyles';
 import { toast } from '@/hooks/use-toast';
 import { getFullExportCode } from '@/lib/designStyles';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useTheme } from '@/hooks/use-theme';
-import { useUndoRedo } from '@/hooks/use-undo-redo';
+import { useThemeStore } from '@/store/themeStore';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -23,63 +22,27 @@ import {
 
 
 const Index = () => {
-  const [selectedStyle, setSelectedStyle] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedId = localStorage.getItem('vibestyle-selected-id');
-      if (savedId) {
-        const found = designStyles.find(s => s.id === savedId);
-        if (found) return found;
-      }
-    }
-    return designStyles[0];
-  });
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [showEditor, setShowEditor] = useState(false);
-  const [showShortcuts, setShowShortcuts] = useState(false);
-  const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDebugMode, setIsDebugMode] = useState(false);
-  const [colorBlindnessMode, setColorBlindnessMode] = useState<ColorBlindnessMode>('none');
-  const [isMobile, setIsMobile] = useState(false);
-
-
-  // Undo/Redo for theme overrides
-  const initialOverrides = useMemo(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('vibestyle-overrides');
-      if (stored) {
-        try { return JSON.parse(stored); } catch (e) { console.error('Failed to parse overrides', e); }
-      }
-    }
-    return {};
-  }, []);
-
+  const store = useThemeStore();
   const {
-    state: themeOverrides,
-    pushState: setThemeOverrides,
-    undo: undoTheme,
-    redo: redoTheme,
-    reset: resetThemeHistory,
-    canUndo,
-    canRedo,
-    historyLength,
-    currentIndex,
-  } = useUndoRedo<ThemeOverrides>(initialOverrides);
+    selectedStyle,
+    themeOverrides,
+    isFullScreen,
+    showEditor,
+    showShortcuts,
+    showCommandPalette,
+    isSidebarCollapsed,
+    isMobileMenuOpen,
+    isDebugMode,
+    colorBlindnessMode,
+    isMobile,
+    history,
+    historyIndex
+  } = store;
 
   const sidebarRef = useRef<StyleSidebarRef>(null);
   const { toggleTheme } = useTheme();
 
   const currentStyleIndex = designStyles.findIndex(s => s.id === selectedStyle.id);
-
-  // Persistence Effects
-  useEffect(() => {
-    localStorage.setItem('vibestyle-selected-id', selectedStyle.id);
-  }, [selectedStyle.id]);
-
-  useEffect(() => {
-    localStorage.setItem('vibestyle-overrides', JSON.stringify(themeOverrides));
-  }, [themeOverrides]);
 
   const handleCopyStyle = async () => {
     const code = getFullExportCode(selectedStyle);
@@ -106,13 +69,12 @@ const Index = () => {
   };
 
   const handleSelectStyle = (style: typeof selectedStyle) => {
-    setSelectedStyle(style);
-    resetThemeHistory({});
-    setIsMobileMenuOpen(false);
+    store.setSelectedStyle(style);
+    store.setMobileMenuOpen(false);
   };
 
   const handleResetOverrides = () => {
-    resetThemeHistory({});
+    store.resetOverrides();
     toast({
       title: "Theme reset",
       description: "All customizations have been cleared.",
@@ -120,8 +82,7 @@ const Index = () => {
   };
 
   const handleRandomize = () => {
-    const randomTheme = generateRandomTheme();
-    setThemeOverrides(randomTheme);
+    store.randomizeTheme();
     toast({
       title: "Feeling Lucky!",
       description: "Generated a new random theme based on color theory.",
@@ -138,21 +99,21 @@ const Index = () => {
   // Keyboard shortcuts
   useKeyboardShortcuts([
     { key: 'k', ctrl: true, handler: () => sidebarRef.current?.focusSearch(), description: 'Focus search' },
-    { key: 'f', handler: () => setIsFullScreen(prev => !prev), description: 'Toggle fullscreen' },
-    { key: 'e', handler: () => setShowEditor(prev => !prev), description: 'Toggle theme editor' },
+    { key: 'f', handler: () => store.toggleFullScreen(), description: 'Toggle fullscreen' },
+    { key: 'e', handler: () => store.toggleEditor(), description: 'Toggle theme editor' },
     { key: 'd', handler: toggleTheme, description: 'Toggle dark mode' },
-    { key: 'z', ctrl: true, handler: () => { if (canUndo) undoTheme(); }, description: 'Undo' },
-    { key: 'z', ctrl: true, shift: true, handler: () => { if (canRedo) redoTheme(); }, description: 'Redo' },
-    { key: 'y', ctrl: true, handler: () => { if (canRedo) redoTheme(); }, description: 'Redo' },
+    { key: 'z', ctrl: true, handler: () => store.undoOverrides(), description: 'Undo' },
+    { key: 'z', ctrl: true, shift: true, handler: () => store.redoOverrides(), description: 'Redo' },
+    { key: 'y', ctrl: true, handler: () => store.redoOverrides(), description: 'Redo' },
     {
       key: 'Escape', handler: () => {
-        if (showShortcuts) setShowShortcuts(false);
-        else if (isFullScreen) setIsFullScreen(false);
-        else if (showEditor) setShowEditor(false);
-        else if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+        if (showShortcuts) store.setShowShortcuts(false);
+        else if (isFullScreen) store.toggleFullScreen();
+        else if (showEditor) store.setShowEditor(false);
+        else if (isMobileMenuOpen) store.setMobileMenuOpen(false);
       }, description: 'Close panel'
     },
-    { key: '?', shift: true, handler: () => setShowShortcuts(prev => !prev), description: 'Show shortcuts' },
+    { key: '?', shift: true, handler: () => store.toggleShortcuts(), description: 'Show shortcuts' },
     { key: 'ArrowUp', handler: () => navigateStyle('prev'), description: 'Previous style' },
     { key: 'ArrowDown', handler: () => navigateStyle('next'), description: 'Next style' },
   ]);
@@ -175,9 +136,9 @@ const Index = () => {
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
+      store.setIsMobile(mobile);
       if (!mobile) {
-        setIsMobileMenuOpen(false);
+        store.setMobileMenuOpen(false);
       }
     };
 
@@ -194,7 +155,7 @@ const Index = () => {
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={() => store.toggleMobileMenu()}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -210,7 +171,7 @@ const Index = () => {
       {isMobileMenuOpen && (
         <div
           className="md:hidden fixed inset-0 z-30 bg-background/80 backdrop-blur-sm animate-fade-in"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => store.setMobileMenuOpen(false)}
         />
       )}
 
@@ -225,9 +186,9 @@ const Index = () => {
             selectedStyle={selectedStyle}
             onSelectStyle={handleSelectStyle}
             onCopyStyle={handleCopyStyle}
-            onShowShortcuts={() => setShowShortcuts(true)}
+            onShowShortcuts={() => store.setShowShortcuts(true)}
             isCollapsed={isSidebarCollapsed}
-            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onToggleCollapse={() => store.toggleSidebar()}
           />
         </div>
       )}
@@ -242,7 +203,7 @@ const Index = () => {
           selectedStyle={selectedStyle}
           onSelectStyle={handleSelectStyle}
           onCopyStyle={handleCopyStyle}
-          onShowShortcuts={() => setShowShortcuts(true)}
+          onShowShortcuts={() => store.setShowShortcuts(true)}
         />
       </div>
 
@@ -254,81 +215,32 @@ const Index = () => {
         <StylePreview
           style={effectiveStyle}
           isFullScreen={isFullScreen}
-          onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
-          onToggleEditor={() => setShowEditor(!showEditor)}
+          onToggleFullScreen={() => store.toggleFullScreen()}
+          onToggleEditor={() => store.toggleEditor()}
           showEditorButton={!isFullScreen}
           isEditorOpen={showEditor}
           isDebugMode={isDebugMode}
-          onToggleDebugMode={() => setIsDebugMode(!isDebugMode)}
+          onToggleDebugMode={() => store.toggleDebugMode()}
           colorBlindnessMode={colorBlindnessMode}
         />
 
         {/* Theme Editor Panel - Desktop */}
         {!isMobile && showEditor && !isFullScreen && (
           <div className="hidden md:block animate-slide-in">
-            <ThemeEditor
-              baseColors={{
-                primary: selectedStyle.colors.primary,
-                accent: selectedStyle.colors.accent,
-                muted: selectedStyle.colors.muted,
-                background: selectedStyle.colors.background,
-                foreground: selectedStyle.colors.foreground,
-                surface: selectedStyle.colors.surface,
-              }}
-              baseFonts={{
-                heading: selectedStyle.fonts.heading,
-                body: selectedStyle.fonts.body,
-              }}
-              baseRadius={selectedStyle.radius}
-              overrides={themeOverrides}
-              onOverridesChange={setThemeOverrides}
-              onReset={handleResetOverrides}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              onUndo={undoTheme}
-              onRedo={redoTheme}
-              historyInfo={{ current: currentIndex, total: historyLength }}
-              colorBlindnessMode={colorBlindnessMode}
-              onColorBlindnessModeChange={setColorBlindnessMode}
-              onRandomize={handleRandomize}
-            />
+            <ThemeEditor />
           </div>
         )}
 
         {/* Theme Editor Panel - Mobile Drawer */}
         {isMobile && (
-          <Drawer open={showEditor} onOpenChange={setShowEditor}>
+          <Drawer open={showEditor} onOpenChange={store.setShowEditor}>
             <DrawerContent className="h-[85vh] outline-none">
               <DrawerHeader className="text-left border-b border-border/10 pb-4">
                 <DrawerTitle className="font-black uppercase tracking-widest text-sm opacity-60">Theme Editor</DrawerTitle>
               </DrawerHeader>
               <div className="flex-1 overflow-hidden h-full">
                 <ThemeEditor
-                  baseColors={{
-                    primary: selectedStyle.colors.primary,
-                    accent: selectedStyle.colors.accent,
-                    muted: selectedStyle.colors.muted,
-                    background: selectedStyle.colors.background,
-                    foreground: selectedStyle.colors.foreground,
-                    surface: selectedStyle.colors.surface,
-                  }}
-                  baseFonts={{
-                    heading: selectedStyle.fonts.heading,
-                    body: selectedStyle.fonts.body,
-                  }}
-                  baseRadius={selectedStyle.radius}
-                  overrides={themeOverrides}
-                  onOverridesChange={setThemeOverrides}
-                  onReset={handleResetOverrides}
-                  canUndo={canUndo}
-                  canRedo={canRedo}
-                  onUndo={undoTheme}
-                  onRedo={redoTheme}
-                  historyInfo={{ current: currentIndex, total: historyLength }}
-                  colorBlindnessMode={colorBlindnessMode}
-                  onColorBlindnessModeChange={setColorBlindnessMode}
                   className="w-full border-0"
-                  onRandomize={handleRandomize}
                 />
               </div>
             </DrawerContent>
@@ -339,19 +251,19 @@ const Index = () => {
       {/* Keyboard Shortcuts Panel */}
       <KeyboardShortcutsPanel
         isOpen={showShortcuts}
-        onClose={() => setShowShortcuts(false)}
+        onClose={() => store.setShowShortcuts(false)}
       />
 
       <OnboardingTour />
 
       <CommandPalette
         open={showCommandPalette}
-        onOpenChange={setShowCommandPalette}
+        onOpenChange={store.setShowCommandPalette}
         onSelectStyle={handleSelectStyle}
         currentStyleId={selectedStyle.id}
-        onToggleFullScreen={() => setIsFullScreen(!isFullScreen)}
-        onToggleEditor={() => setShowEditor(!showEditor)}
-        onToggleDebugMode={() => setIsDebugMode(!isDebugMode)}
+        onToggleFullScreen={() => store.toggleFullScreen()}
+        onToggleEditor={() => store.toggleEditor()}
+        onToggleDebugMode={() => store.toggleDebugMode()}
         isDebugMode={isDebugMode}
         onCopyStyle={handleCopyStyle}
       />

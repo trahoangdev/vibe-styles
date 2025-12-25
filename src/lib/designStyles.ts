@@ -8,6 +8,31 @@ export const styleCategories: { id: StyleCategory; label: string }[] = [
   { id: 'minimalist', label: 'Minimalist' },
 ];
 
+export interface ColorPalette {
+  primary: string;
+  primaryForeground: string;
+  accent: string;
+  accentForeground: string;
+  background: string;
+  foreground: string;
+  surface: string;
+  surfaceForeground: string;
+  muted: string;
+  mutedForeground: string;
+  border: string;
+  success: string;
+  warning: string;
+  error: string;
+}
+
+export interface Typography {
+  heading: string;
+  body: string;
+  mono?: string;
+  headingWeight?: string;
+  bodyWeight?: string;
+}
+
 export interface DesignStyle {
   id: string;
   name: string;
@@ -15,29 +40,8 @@ export interface DesignStyle {
   icon: string;
   theme: 'light' | 'dark';
   category: StyleCategory[];
-  fonts: {
-    heading: string;
-    body: string;
-    mono?: string;
-    headingWeight?: string;
-    bodyWeight?: string;
-  };
-  colors: {
-    primary: string;
-    primaryForeground: string;
-    accent: string;
-    accentForeground: string;
-    background: string;
-    foreground: string;
-    surface: string;
-    surfaceForeground: string;
-    muted: string;
-    mutedForeground: string;
-    border: string;
-    success: string;
-    warning: string;
-    error: string;
-  };
+  fonts: Typography;
+  colors: ColorPalette;
   radius: string;
   shadowStrength?: number; // 0 to 1 scale
   characteristics: string[];

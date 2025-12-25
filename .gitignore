@@ -53,9 +53,15 @@ temp/
 # TypeScript
 *.tsbuildinfo
 
-# Coverage
+# Testing
 coverage/
-*.lcov
+test-results/
+.vitest/
+
+# Storybook
+storybook-static/
+*.log
+debug-storybook.log
 
 #markdown files
 *.md

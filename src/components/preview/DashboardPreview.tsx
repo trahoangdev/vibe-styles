@@ -4,6 +4,8 @@ import {
     TrendingUp, TrendingDown, DollarSign, Activity,
     MoreVertical, PieChart, Layers
 } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface DashboardPreviewProps {
     style: DesignStyle;
@@ -12,13 +14,15 @@ interface DashboardPreviewProps {
 }
 
 export function DashboardPreview({ style, cardStyle, isMobile = false }: DashboardPreviewProps) {
+    const [activeTab, setActiveTab] = useState('Overview');
+
     const sidebarItems = [
-        { icon: Home, label: 'Overview', active: true },
-        { icon: BarChart2, label: 'Analytics', active: false },
-        { icon: Users, label: 'Customers', active: false },
-        { icon: Layers, label: 'Projects', active: false },
-        { icon: PieChart, label: 'Reports', active: false },
-        { icon: Settings, label: 'Settings', active: false },
+        { icon: Home, label: 'Overview' },
+        { icon: BarChart2, label: 'Analytics' },
+        { icon: Users, label: 'Customers' },
+        { icon: Layers, label: 'Projects' },
+        { icon: PieChart, label: 'Reports' },
+        { icon: Settings, label: 'Settings' },
     ];
 
     const stats = [
@@ -46,8 +50,9 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
                     {sidebarItems.map((item, i) => (
                         <button
                             key={i}
+                            onClick={() => setActiveTab(item.label)}
                             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium
-                                ${item.active
+                                ${activeTab === item.label
                                     ? 'bg-primary text-primary-foreground shadow-sm'
                                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                 }`}
@@ -89,81 +94,108 @@ export function DashboardPreview({ style, cardStyle, isMobile = false }: Dashboa
                 </header>
 
                 {/* Dashboard Content */}
-                <main className="flex-1 p-6 overflow-y-auto">
-                    <div className="mb-6 flex items-center justify-between">
-                        <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: style.fonts.heading }}>Dashboard</h2>
-                        <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-                            Download Report
-                        </button>
-                    </div>
-
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        {stats.map((stat, i) => (
-                            <div key={i} className={`${cardStyle} p-6 bg-surface`} style={{ borderRadius: style.radius }}>
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
-                                    <stat.icon className="w-4 h-4 text-muted-foreground" />
+                <main className="flex-1 p-6 overflow-y-auto relative">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'Overview' ? (
+                            <motion.div
+                                key="overview"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <div className="mb-6 flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: style.fonts.heading }}>Dashboard</h2>
+                                    <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+                                        Download Report
+                                    </button>
                                 </div>
-                                <div className="flex items-baseline gap-2">
-                                    <h3 className="text-2xl font-bold">{stat.value}</h3>
-                                    <span className={`text-xs font-medium flex items-center ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
-                                        {stat.trend === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
-                                        {stat.change}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
 
-                    {/* Chart & Activity Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Main Chart Placeholder */}
-                        <div className={`col-span-2 ${cardStyle} p-6 min-h-[300px] flex flex-col`} style={{ borderRadius: style.radius }}>
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="font-bold">Revenue Overview</h3>
-                                <div className="flex bg-muted/50 rounded-lg p-0.5">
-                                    {['D', 'W', 'M', 'Y'].map(t => (
-                                        <button key={t} className={`px-3 py-1 text-xs font-medium rounded-md ${t === 'M' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-                                            {t}
-                                        </button>
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                    {stats.map((stat, i) => (
+                                        <div key={i} className={`${cardStyle} p-6 bg-surface`} style={{ borderRadius: style.radius }}>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
+                                                <stat.icon className="w-4 h-4 text-muted-foreground" />
+                                            </div>
+                                            <div className="flex items-baseline gap-2">
+                                                <h3 className="text-2xl font-bold">{stat.value}</h3>
+                                                <span className={`text-xs font-medium flex items-center ${stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+                                                    {stat.trend === 'up' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+                                                    {stat.change}
+                                                </span>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
-                            </div>
-                            <div className="flex-1 w-full bg-muted/10 rounded-lg border border-dashed border-border flex items-end justify-between px-4 pb-0 pt-8 gap-2 overflow-hidden">
-                                {/* Fake Bars */}
-                                {Array.from({ length: 12 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/40 transition-colors"
-                                        style={{ height: `${Math.random() * 60 + 20}%` }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
 
-                        {/* Recent Activity */}
-                        <div className={`${cardStyle} p-6`} style={{ borderRadius: style.radius }}>
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="font-bold">Recent Activity</h3>
-                                <MoreVertical className="w-4 h-4 text-muted-foreground cursor-pointer" />
-                            </div>
-                            <div className="space-y-6">
-                                {[1, 2, 3, 4].map((_, i) => (
-                                    <div key={i} className="flex gap-4">
-                                        <div className="relative">
-                                            <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
-                                            {i !== 3 && <div className="absolute top-3.5 left-1 w-px h-10 bg-border" />}
+                                {/* Chart & Activity Grid */}
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                    {/* Main Chart Placeholder */}
+                                    <div className={`col-span-2 ${cardStyle} p-6 min-h-[300px] flex flex-col`} style={{ borderRadius: style.radius }}>
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h3 className="font-bold">Revenue Overview</h3>
+                                            <div className="flex bg-muted/50 rounded-lg p-0.5">
+                                                {['D', 'W', 'M', 'Y'].map(t => (
+                                                    <button key={t} className={`px-3 py-1 text-xs font-medium rounded-md ${t === 'M' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
+                                                        {t}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-sm font-medium">New project created</p>
-                                            <p className="text-xs text-muted-foreground">2 minutes ago</p>
+                                        <div className="flex-1 w-full bg-muted/10 rounded-lg border border-dashed border-border flex items-end justify-between px-4 pb-0 pt-8 gap-2 overflow-hidden">
+                                            {/* Fake Bars */}
+                                            {Array.from({ length: 12 }).map((_, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="w-full bg-primary/20 rounded-t-sm hover:bg-primary/40 transition-colors"
+                                                    style={{ height: `${Math.random() * 60 + 20}%` }}
+                                                />
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+
+                                    {/* Recent Activity */}
+                                    <div className={`${cardStyle} p-6`} style={{ borderRadius: style.radius }}>
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h3 className="font-bold">Recent Activity</h3>
+                                            <MoreVertical className="w-4 h-4 text-muted-foreground cursor-pointer" />
+                                        </div>
+                                        <div className="space-y-6">
+                                            {[1, 2, 3, 4].map((_, i) => (
+                                                <div key={i} className="flex gap-4">
+                                                    <div className="relative">
+                                                        <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
+                                                        {i !== 3 && <div className="absolute top-3.5 left-1 w-px h-10 bg-border" />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-medium">New project created</p>
+                                                        <p className="text-xs text-muted-foreground">2 minutes ago</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="placeholder"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.05 }}
+                                transition={{ duration: 0.2 }}
+                                className="h-full flex flex-col items-center justify-center text-center p-12 opacity-50"
+                            >
+                                <div className="w-24 h-24 rounded-full bg-muted mb-6 flex items-center justify-center">
+                                    <Settings className="w-10 h-10 text-muted-foreground" />
+                                </div>
+                                <h2 className="text-2xl font-bold mb-2">{activeTab} Page</h2>
+                                <p>This simulates navigation to the {activeTab} section.</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </main>
             </div>
         </section>
