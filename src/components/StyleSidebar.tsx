@@ -2,32 +2,46 @@ import { designStyles, styleCategories, type DesignStyle, type StyleCategory } f
 import { cn } from '@/lib/utils';
 import {
   Copy, Check, Search, X, ChevronLeft, ChevronRight, Keyboard,
-  Apple, Music, Feather, Minus, Square, Newspaper, Layers, Wind,
-  Hexagon, FileText, Github, MessageCircle, CreditCard, Triangle, Dribbble, User,
+  Feather, Minus, Square, Newspaper, Layers,
+  Hexagon, User,
   type LucideIcon
 } from 'lucide-react';
+import {
+  SiApple,
+  SiSpotify,
+  SiNotion,
+  SiGithub,
+  SiStripe,
+  SiVercel,
+  SiDribbble,
+  SiDiscord,
+  SiTailwindcss
+} from '@icons-pack/react-simple-icons';
 import { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'react';
 import { EmptyState } from './EmptyState';
 import { ThemeToggle } from './ThemeToggle';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
-// Map icon names to Lucide components
-const iconMap: Record<string, LucideIcon> = {
-  'apple': Apple,
-  'music': Music,
+// Union type for icons
+type IconType = LucideIcon | React.ComponentType<{ color?: string, size?: string | number, className?: string }>;
+
+// Map icon names to components
+const iconMap: Record<string, IconType> = {
+  'apple': SiApple,
+  'music': SiSpotify,
   'feather': Feather,
   'minus': Minus,
   'square': Square,
   'newspaper': Newspaper,
   'layers': Layers,
-  'wind': Wind,
+  'wind': SiTailwindcss,
   'hexagon': Hexagon,
-  'file-text': FileText,
-  'github': Github,
-  'message-circle': MessageCircle,
-  'credit-card': CreditCard,
-  'triangle': Triangle,
-  'dribbble': Dribbble,
+  'file-text': SiNotion,
+  'github': SiGithub,
+  'message-circle': SiDiscord,
+  'credit-card': SiStripe,
+  'triangle': SiVercel,
+  'dribbble': SiDribbble,
   'user': User,
 };
 
