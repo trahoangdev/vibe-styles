@@ -40,8 +40,8 @@ export function KanbanPreview({ style, cardStyle, isMobile = false }: KanbanPrev
         <section className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-lg font-bold tracking-tight mb-1" style={{ fontFamily: style.fonts.heading }}>Project Board</h2>
-                    <p className="text-sm opacity-60">Visualizing workflow and task status.</p>
+                    <h2 className="text-lg font-bold tracking-tight mb-1" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>Project Board</h2>
+                    <p className="text-sm" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Visualizing workflow and task status.</p>
                 </div>
                 <button
                     className="px-3 py-1.5 text-xs font-bold rounded-lg transition-transform active:scale-95 bg-primary text-primary-foreground"
@@ -60,12 +60,12 @@ export function KanbanPreview({ style, cardStyle, isMobile = false }: KanbanPrev
                     >
                         <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-2">
-                                <h3 className="text-xs font-bold uppercase tracking-wider opacity-60">{col.title}</h3>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
+                                <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{col.title}</h3>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: `hsl(${style.colors.muted})`, color: `hsl(${style.colors.mutedForeground})` }}>
                                     {col.count}
                                 </span>
                             </div>
-                            <MoreHorizontal className="w-4 h-4 opacity-30 hover:opacity-100 cursor-pointer" />
+                            <MoreHorizontal className="w-4 h-4 cursor-pointer" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                         </div>
 
                         <div className="space-y-3">
@@ -86,21 +86,25 @@ export function KanbanPreview({ style, cardStyle, isMobile = false }: KanbanPrev
                                         </span>
                                         <MoreHorizontal className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
-                                    <h4 className="text-sm font-semibold mb-3 leading-snug">{card.title}</h4>
+                                    <h4 className="text-sm font-semibold mb-3 leading-snug" style={{ color: `hsl(${style.colors.foreground})` }}>{card.title}</h4>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-border/40">
+                                    <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: `hsl(${style.colors.border} / 0.4)` }}>
                                         <div className="flex -space-x-2">
                                             {[...Array(card.members)].map((_, midx) => (
                                                 <div
                                                     key={midx}
-                                                    className="w-5 h-5 rounded-full bg-muted border border-surface flex items-center justify-center text-[8px] font-bold"
-                                                    style={{ backgroundColor: midx === 0 ? `hsl(${style.colors.accent})` : undefined, color: midx === 0 ? `hsl(${style.colors.accentForeground})` : undefined }}
+                                                    className="w-5 h-5 rounded-full border flex items-center justify-center text-[8px] font-bold"
+                                                    style={{ 
+                                                        backgroundColor: midx === 0 ? `hsl(${style.colors.accent})` : `hsl(${style.colors.muted})`, 
+                                                        color: midx === 0 ? `hsl(${style.colors.accentForeground})` : `hsl(${style.colors.foreground})`,
+                                                        borderColor: `hsl(${style.colors.surface})`
+                                                    }}
                                                 >
                                                     {String.fromCharCode(65 + midx)}
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="flex items-center gap-3 opacity-50 text-[10px] font-medium">
+                                        <div className="flex items-center gap-3 text-[10px] font-medium" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                                             {card.comments > 0 && (
                                                 <div className="flex items-center gap-1">
                                                     <MessageSquare className="w-3 h-3" />
@@ -116,7 +120,7 @@ export function KanbanPreview({ style, cardStyle, isMobile = false }: KanbanPrev
                                 </div>
                             ))}
                             {/* Add card ghost */}
-                            <button className="w-full py-2 border border-dashed border-border rounded-lg text-xs opacity-40 hover:opacity-100 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-1">
+                            <button className="w-full py-2 border border-dashed rounded-lg text-xs transition-all flex items-center justify-center gap-1" style={{ borderColor: `hsl(${style.colors.border})`, color: `hsl(${style.colors.mutedForeground})` }}>
                                 <Plus className="w-3 h-3" />
                                 Add Card
                             </button>

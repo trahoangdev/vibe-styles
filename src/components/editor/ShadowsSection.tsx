@@ -1,5 +1,6 @@
-import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
+import { Layers, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { ThemeOverrides } from '@/lib/designStyles';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ShadowsSectionProps {
     currentShadowStrength: number;
@@ -26,6 +27,12 @@ export function ShadowsSection({
         });
     };
 
+    const resetShadows = () => {
+        const { shadowStrength, ...rest } = overrides;
+        onOverridesChange(rest);
+    };
+
+    const hasChanges = overrides.shadowStrength !== undefined;
     const terms = ['shadow', 'depth', 'elevation', 'light'];
     const isMatch = searchQuery === '' || terms.some(t => t.includes(searchQuery.toLowerCase()));
 
@@ -40,8 +47,29 @@ export function ShadowsSection({
                 <div className="flex items-center gap-3">
                     <Layers className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     <span className="text-xs font-black uppercase tracking-widest">Depth Perception</span>
+                    {hasChanges && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    )}
                 </div>
-                {isOpen ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
+                <div className="flex items-center gap-2">
+                    {hasChanges && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        resetShadows();
+                                    }}
+                                    className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <RotateCcw className="w-3 h-3" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Reset to default</TooltipContent>
+                        </Tooltip>
+                    )}
+                    {isOpen ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
+                </div>
             </button>
 
             {isOpen && (

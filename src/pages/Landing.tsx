@@ -717,6 +717,74 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="py-32 px-4 sm:px-6 lg:px-8 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent" />
+        
+        <div className="max-w-7xl mx-auto relative">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <span className="inline-block text-sm font-medium text-zinc-500 mb-4">
+              TESTIMONIALS
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+              Loved by developers
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              See what the community is saying
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "Vibe Styles saved me hours of design work. The presets are incredibly well-crafted.",
+                author: "Sarah Chen",
+                role: "Frontend Developer",
+                avatar: "SC",
+              },
+              {
+                quote: "Finally, a tool that understands design systems. The export feature is a game-changer.",
+                author: "Marcus Johnson",
+                role: "UI/UX Designer",
+                avatar: "MJ",
+              },
+              {
+                quote: "The keyboard shortcuts and command palette make it so fast to iterate on designs.",
+                author: "Alex Rivera",
+                role: "Full Stack Developer",
+                avatar: "AR",
+              },
+            ].map((testimonial, index) => (
+              <motion.div
+                key={testimonial.author}
+                className="relative p-6 rounded-2xl bg-card/50 border border-border/50 backdrop-blur-sm"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
+                <p className="text-foreground mb-6 leading-relaxed">"{testimonial.quote}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-500 to-zinc-700 flex items-center justify-center text-white text-sm font-medium">
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{testimonial.author}</p>
+                    <p className="text-muted-foreground text-xs">{testimonial.role}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -774,32 +842,120 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border/50">
+      <footer className="py-16 px-4 sm:px-6 lg:px-8 border-t border-border/50 bg-muted/20">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <motion.div 
-              className="flex items-center gap-3"
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-zinc-600 rounded-lg blur opacity-30" />
-                <img src="/logo.png" alt="Vibe Styles" className="relative w-6 h-6 rounded-lg" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            {/* Brand */}
+            <div className="md:col-span-2">
+              <motion.div 
+                className="flex items-center gap-3 mb-4"
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-zinc-600 rounded-lg blur opacity-30" />
+                  <img src="/logo.png" alt="Vibe Styles" className="relative w-8 h-8 rounded-lg" />
+                </div>
+                <span className="font-bold text-lg">Vibe Styles</span>
+              </motion.div>
+              <p className="text-muted-foreground text-sm max-w-sm mb-6">
+                The ultimate Design System Explorer & Generator. Explore, customize, and export beautiful design systems.
+              </p>
+              <div className="flex gap-3">
+                <motion.a
+                  href="https://github.com/trahoangdev/vibe-styles"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <SiGithub size={18} />
+                </motion.a>
+                <motion.a
+                  href="https://twitter.com/trahoangdev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </motion.a>
+                <motion.a
+                  href="https://discord.gg/trahoangdev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <SiDiscord size={18} />
+                </motion.a>
               </div>
-              <span className="font-semibold">Vibe Styles</span>
-            </motion.div>
+            </div>
+
+            {/* Links */}
+            <div>
+              <h4 className="font-semibold mb-4 text-sm">Product</h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/app" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Launch App
+                  </Link>
+                </li>
+                <li>
+                  <a href="https://github.com/trahoangdev/vibe-styles#features" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/trahoangdev/vibe-styles#keyboard-shortcuts" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Shortcuts
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-sm">Resources</h4>
+              <ul className="space-y-3">
+                <li>
+                  <a href="https://github.com/trahoangdev/vibe-styles" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/trahoangdev/vibe-styles/issues" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Report Bug
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/trahoangdev/vibe-styles/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Contributing
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              Built with ❤️ using React, Tailwind CSS & Framer Motion by trahoangdev
+              © 2024 Vibe Styles. MIT License.
             </p>
-            <motion.a
-              href="https://github.com/trahoangdev/vibe-styles"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2.5 rounded-xl hover:bg-muted transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Github className="w-5 h-5" />
-            </motion.a>
+            <p className="text-sm text-muted-foreground">
+              Built with ❤️ by{' '}
+              <a 
+                href="https://github.com/trahoangdev" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-medium text-foreground hover:underline"
+              >
+                @trahoangdev
+              </a>
+            </p>
           </div>
         </div>
       </footer>

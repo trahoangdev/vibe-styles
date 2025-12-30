@@ -54,10 +54,11 @@ export function StylePreview({
   const [devicePreview, setDevicePreview] = useState<DeviceType>('desktop');
   const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>(style.theme);
 
-  // Sync preview theme when style changes
+  // Only sync preview theme when style ID changes (new style selected), not when app theme changes
   useEffect(() => {
     setPreviewTheme(style.theme);
-  }, [style.id, style.theme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [style.id]); // Intentionally omit style.theme - preview theme should be independent from app theme
 
   const activeColors = useMemo(() => {
     if (previewTheme === style.theme) return style.colors;
@@ -72,6 +73,7 @@ export function StylePreview({
   }, [style, previewTheme]);
 
   const cssVars = useMemo(() => ({
+    // Style-specific tokens
     '--style-primary': activeColors.primary,
     '--style-primary-foreground': activeColors.primaryForeground,
     '--style-accent': activeColors.accent,
@@ -95,12 +97,34 @@ export function StylePreview({
     '--style-density': style.density || 1,
     '--style-bg-gradient': style.gradients?.background,
 
-    // Map standard Tailwind variables to the preview style
+    // CRITICAL: Override Tailwind CSS variables to isolate preview from app theme
+    // This ensures preview components using Tailwind classes (bg-muted, border-border, etc.)
+    // use the preview style colors instead of app theme colors
+    '--background': activeColors.background,
+    '--foreground': activeColors.foreground,
+    '--card': activeColors.surface,
+    '--card-foreground': activeColors.surfaceForeground,
+    '--popover': activeColors.surface,
+    '--popover-foreground': activeColors.surfaceForeground,
     '--primary': activeColors.primary,
-
-    // ... (lines 125-140 unchanged)
+    '--primary-foreground': activeColors.primaryForeground,
+    '--secondary': activeColors.muted,
+    '--secondary-foreground': activeColors.mutedForeground,
+    '--muted': activeColors.muted,
+    '--muted-foreground': activeColors.mutedForeground,
+    '--accent': activeColors.accent,
+    '--accent-foreground': activeColors.accentForeground,
+    '--destructive': activeColors.error,
+    '--destructive-foreground': activeColors.primaryForeground,
+    '--border': activeColors.border,
+    '--input': activeColors.border,
+    '--ring': activeColors.primary,
     '--radius': style.radius,
-  } as React.CSSProperties), [activeColors, style.radius, style.fonts, style.shadowStrength, style.borderWidth, style.density]);
+    
+    // Surface alias for components using bg-surface
+    '--surface': activeColors.surface,
+    '--surface-foreground': activeColors.surfaceForeground,
+  } as React.CSSProperties), [activeColors, style.radius, style.fonts, style.shadowStrength, style.borderWidth, style.density, style.gradients?.background]);
 
   const isNeoBrutalism = style.id === 'neo-brutalism';
   const isSwissMinimal = style.id === 'swiss-minimal';

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import {
   Copy, Check, Search, X, ChevronLeft, ChevronRight, Keyboard, Star,
   Feather, Minus, Square, Newspaper, Layers,
-  Hexagon, User,
+  Hexagon, User, Cpu, BookOpen, Moon, Sparkles, Grid3X3,
   type LucideIcon
 } from 'lucide-react';
 import {
@@ -22,6 +22,7 @@ import { EmptyState } from './EmptyState';
 import { ThemeToggle } from './ThemeToggle';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { useThemeStore } from '@/store/themeStore';
+import { hslToHex } from '@/lib/colorUtils';
 
 // Union type for icons
 type IconType = LucideIcon | React.ComponentType<{ color?: string, size?: string | number, className?: string }>;
@@ -46,10 +47,42 @@ const iconMap: Record<string, IconType> = {
   'user': User,
 };
 
+// Category icons
+const categoryIcons: Record<string, LucideIcon> = {
+  'all': Grid3X3,
+  'tech': Cpu,
+  'editorial': BookOpen,
+  'dark': Moon,
+  'minimalist': Sparkles,
+};
+
 const StyleIcon = ({ iconName, className }: { iconName: string; className?: string }) => {
   const IconComponent = iconMap[iconName];
   if (!IconComponent) return <span className={className}>{iconName}</span>;
   return <IconComponent className={className} />;
+};
+
+// Mini color palette preview component
+const ColorPalettePreview = ({ style }: { style: DesignStyle }) => {
+  const colors = [
+    style.colors.primary,
+    style.colors.accent,
+    style.colors.background,
+    style.colors.foreground,
+  ];
+  
+  return (
+    <div className="flex gap-0.5 mt-1.5">
+      {colors.map((color, i) => (
+        <div
+          key={i}
+          className="w-3 h-3 rounded-sm border border-border/30"
+          style={{ backgroundColor: `hsl(${color})` }}
+          title={hslToHex(color)}
+        />
+      ))}
+    </div>
+  );
 };
 
 interface StyleSidebarProps {
@@ -76,7 +109,10 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
   const [copied, setCopied] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<StyleCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLElement>(null);
   const { favoriteStyleIds, toggleFavorite } = useThemeStore();
 
   useImperativeHandle(ref, () => ({
@@ -84,6 +120,15 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
       searchInputRef.current?.focus();
     }
   }));
+
+  // Check scroll position for indicators
+  const checkScroll = () => {
+    if (listRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listRef.current;
+      setCanScrollUp(scrollTop > 10);
+      setCanScrollDown(scrollTop < scrollHeight - clientHeight - 10);
+    }
+  };
 
   const handleCopy = () => {
     onCopyStyle();
@@ -265,50 +310,68 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
               </TooltipTrigger>
               <TooltipContent>Your favorite styles</TooltipContent>
             </Tooltip>
-            {styleCategories.map((cat) => (
-              <Tooltip key={cat.id}>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={cn(
-                      'px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1.5',
-                      selectedCategory === cat.id
-                        ? 'bg-foreground text-background shadow-soft'
-                        : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
-                    )}
-                  >
-                    {cat.label}
-                    <span className={cn(
-                      'text-[10px] px-1.5 py-0.5 rounded-full',
-                      selectedCategory === cat.id
-                        ? 'bg-background/20'
-                        : 'bg-foreground/10'
-                    )}>
-                      {categoryCounts[cat.id]}
-                    </span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>{categoryCounts[cat.id]} styles</TooltipContent>
-              </Tooltip>
-            ))}
+            {styleCategories.map((cat) => {
+              const CategoryIcon = categoryIcons[cat.id] || Grid3X3;
+              return (
+                <Tooltip key={cat.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={cn(
+                        'px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1.5',
+                        selectedCategory === cat.id
+                          ? 'bg-foreground text-background shadow-soft'
+                          : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
+                      )}
+                    >
+                      <CategoryIcon className="w-3 h-3" />
+                      {cat.label}
+                      <span className={cn(
+                        'text-[10px] px-1.5 py-0.5 rounded-full',
+                        selectedCategory === cat.id
+                          ? 'bg-background/20'
+                          : 'bg-foreground/10'
+                      )}>
+                        {categoryCounts[cat.id]}
+                      </span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>{categoryCounts[cat.id]} styles</TooltipContent>
+                </Tooltip>
+              );
+            })}
           </div>
         </div>
 
-        {/* Style List */}
-        <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
-          {filteredStyles.length === 0 ? (
-            <EmptyState
-              title={selectedCategory === ('favorites' as StyleCategory) ? "No favorites yet" : "No styles found"}
-              description={selectedCategory === ('favorites' as StyleCategory) ? "Click the star icon to add favorites" : "Try a different search term or category"}
-            />
-          ) : (
-            <div className="space-y-1">
-              {filteredStyles.map((style, index) => (
-                <div
-                  key={style.id}
-                  className="relative group"
-                  style={{ animationDelay: `${index * 30}ms` }}
-                >
+        {/* Style List with Scroll Indicators */}
+        <div className="relative flex-1">
+          {/* Top scroll indicator */}
+          <div 
+            className={cn(
+              "absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-card to-transparent z-10 pointer-events-none transition-opacity duration-200",
+              canScrollUp ? "opacity-100" : "opacity-0"
+            )}
+          />
+          
+          <nav 
+            ref={listRef}
+            className="h-full overflow-y-auto scrollbar-thin px-3 py-3"
+            onScroll={checkScroll}
+          >
+            {filteredStyles.length === 0 ? (
+              <EmptyState
+                title={selectedCategory === ('favorites' as StyleCategory) ? "No favorites yet" : "No styles found"}
+                description={selectedCategory === ('favorites' as StyleCategory) ? "Click the star icon to add favorites" : "Try a different search term or category"}
+                icon={selectedCategory === ('favorites' as StyleCategory) ? "favorites" : "search"}
+              />
+            ) : (
+              <div className="space-y-1">
+                {filteredStyles.map((style, index) => (
+                  <div
+                    key={style.id}
+                    className="relative group"
+                    style={{ animationDelay: `${index * 30}ms` }}
+                  >
                   <button
                     onClick={() => onSelectStyle(style)}
                     className={cn(
@@ -336,7 +399,7 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
                         </div>
                         <p
                           className={cn(
-                            'text-xs mt-1 line-clamp-2',
+                            'text-xs mt-1 line-clamp-1',
                             selectedStyle.id === style.id
                               ? 'text-background/70'
                               : 'text-muted-foreground'
@@ -344,6 +407,8 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
                         >
                           {style.description}
                         </p>
+                        {/* Color palette preview on hover */}
+                        <ColorPalettePreview style={style} />
                       </div>
                     </div>
                   </button>
@@ -374,7 +439,16 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
               ))}
             </div>
           )}
-        </nav>
+          </nav>
+          
+          {/* Bottom scroll indicator */}
+          <div 
+            className={cn(
+              "absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent z-10 pointer-events-none transition-opacity duration-200",
+              canScrollDown ? "opacity-100" : "opacity-0"
+            )}
+          />
+        </div>
 
         {/* Footer */}
         <div className="p-4 border-t border-border space-y-3">

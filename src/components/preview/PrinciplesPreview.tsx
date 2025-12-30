@@ -41,13 +41,13 @@ export function PrinciplesPreview({ style, cardStyle, isMobile = false }: Princi
             <div className="mb-12">
                 <h3
                     className="text-4xl md:text-5xl font-black tracking-tighter mb-4"
-                    style={{ fontFamily: style.fonts.heading }}
+                    style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}
                 >
                     Core Principles
                 </h3>
                 <p
-                    className="text-lg opacity-60 max-w-2xl"
-                    style={{ fontFamily: style.fonts.body }}
+                    className="text-lg max-w-2xl"
+                    style={{ fontFamily: style.fonts.body, color: `hsl(${style.colors.mutedForeground})` }}
                 >
                     Our design philosophy is rooted in Swiss Modernism: content-first, grid-based, and devoid of unnecessary decoration.
                 </p>
@@ -76,22 +76,22 @@ export function PrinciplesPreview({ style, cardStyle, isMobile = false }: Princi
 
                         <div className="relative z-10">
                             <div
-                                className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-foreground"
+                                className="w-12 h-12 rounded-lg flex items-center justify-center mb-6"
                                 style={{ backgroundColor: `hsl(${style.colors.background})` }}
                             >
-                                <p.icon className="w-6 h-6 opacity-80" />
+                                <p.icon className="w-6 h-6" style={{ color: `hsl(${style.colors.foreground})` }} />
                             </div>
 
                             <h4
                                 className="text-xl font-bold mb-3"
-                                style={{ fontFamily: style.fonts.heading }}
+                                style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}
                             >
                                 {p.title}
                             </h4>
 
                             <p
-                                className="text-sm opacity-70 leading-relaxed"
-                                style={{ fontFamily: style.fonts.body }}
+                                className="text-sm leading-relaxed"
+                                style={{ fontFamily: style.fonts.body, color: `hsl(${style.colors.mutedForeground})` }}
                             >
                                 {p.description}
                             </p>

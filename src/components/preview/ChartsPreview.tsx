@@ -86,10 +86,10 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
     return (
         <div className="mt-20 border-t border-border/30 pt-20 animate-fade-in">
             <div className="flex flex-col mb-8">
-                <h3 className="text-2xl font-black uppercase tracking-tighter" style={{ fontFamily: style.fonts.heading }}>
+                <h3 className="text-2xl font-black uppercase tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                     Analytics Core
                 </h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Real-time Visualization</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Real-time Visualization</p>
             </div>
 
             <div className={`grid gap-8 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-2'}`}>
@@ -107,11 +107,11 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
                                 <TrendingUp className="w-4 h-4" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-sm">Revenue Flow</h4>
-                                <p className="text-[10px] opacity-60">+12.5% vs last week</p>
+                                <h4 className="font-bold text-sm" style={{ color: `hsl(${style.colors.foreground})` }}>Revenue Flow</h4>
+                                <p className="text-[10px]" style={{ color: `hsl(${style.colors.mutedForeground})` }}>+12.5% vs last week</p>
                             </div>
                         </div>
-                        <button className="text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">
+                        <button className="text-xs font-bold uppercase tracking-widest transition-opacity" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                             Weekly
                         </button>
                     </div>
@@ -172,8 +172,8 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
                     >
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
-                                <BarChart className="w-4 h-4 opacity-60" />
-                                <h4 className="font-bold text-sm">User Acquisition</h4>
+                                <BarChart className="w-4 h-4" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                                <h4 className="font-bold text-sm" style={{ color: `hsl(${style.colors.foreground})` }}>User Acquisition</h4>
                             </div>
                             <div className="px-2 py-0.5 rounded text-[10px] font-bold bg-success/10 text-success" style={{ color: `hsl(${style.colors.success})` }}>
                                 On Track
@@ -228,8 +228,8 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
                                 </div>
                             </div>
                             <div className="mt-2 text-center">
-                                <p className="text-xs font-bold">Traffic</p>
-                                <p className="text-[10px] opacity-60">Source Breakdown</p>
+                                <p className="text-xs font-bold" style={{ color: `hsl(${style.colors.foreground})` }}>Traffic</p>
+                                <p className="text-[10px]" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Source Breakdown</p>
                             </div>
                         </div>
 
@@ -241,17 +241,17 @@ export function ChartsPreview({ style, cardStyle, isMobile = false }: ChartsPrev
                             }}
                         >
                             <div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-1">Total Conversion</p>
-                                <p className="text-3xl font-black tracking-tight flex items-start gap-1">
+                                <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Total Conversion</p>
+                                <p className="text-3xl font-black tracking-tight flex items-start gap-1" style={{ color: `hsl(${style.colors.foreground})` }}>
                                     84.3%
-                                    <ArrowUpRight className="w-3 h-3 text-success translate-y-1" style={{ color: `hsl(${style.colors.success})` }} />
+                                    <ArrowUpRight className="w-3 h-3 translate-y-1" style={{ color: `hsl(${style.colors.success})` }} />
                                 </p>
                             </div>
                             <div className="space-y-1">
-                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                                    <div className="h-full bg-primary w-[84%]" style={{ backgroundColor: `hsl(${style.colors.primary})` }} />
+                                <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: `hsl(${style.colors.muted})` }}>
+                                    <div className="h-full w-[84%]" style={{ backgroundColor: `hsl(${style.colors.primary})` }} />
                                 </div>
-                                <p className="text-[10px] text-right opacity-60">Target: 80%</p>
+                                <p className="text-[10px] text-right" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Target: 80%</p>
                             </div>
                         </div>
                     </div>

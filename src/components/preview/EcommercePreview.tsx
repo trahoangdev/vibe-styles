@@ -19,10 +19,10 @@ export function EcommercePreview({ style, cardStyle, isMobile = false }: Ecommer
         <div className="mt-20 border-t border-border/30 pt-20 animate-fade-in">
             <div className="flex items-center justify-between mb-10">
                 <div>
-                    <h3 className="text-2xl font-black uppercase tracking-tighter" style={{ fontFamily: style.fonts.heading }}>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                         Product Catalog
                     </h3>
-                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Aesthetic Hardware Solutions</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Aesthetic Hardware Solutions</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button className="p-2.5 rounded-xl border border-border hover:bg-muted transition-all">
@@ -69,20 +69,20 @@ export function EcommercePreview({ style, cardStyle, isMobile = false }: Ecommer
                         </div>
                         <div className="p-5 flex-1 flex flex-col">
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-[8px] font-black uppercase tracking-widest opacity-40">{product.category}</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{product.category}</span>
                                 <div className="flex gap-0.5">
                                     {[...Array(5)].map((_, j) => (
                                         <Star
                                             key={j}
-                                            className={`w-2 h-2 ${j < product.rating ? 'fill-accent text-accent' : 'text-muted-foreground/20'}`}
-                                            style={{ color: j < product.rating ? `hsl(${style.colors.accent})` : 'inherit' }}
+                                            className={`w-2 h-2 ${j < product.rating ? 'fill-current' : ''}`}
+                                            style={{ color: j < product.rating ? `hsl(${style.colors.accent})` : `hsl(${style.colors.mutedForeground} / 0.2)` }}
                                         />
                                     ))}
                                 </div>
                             </div>
-                            <h4 className="font-black text-sm uppercase tracking-tight mb-4 group-hover:text-primary transition-colors">{product.name}</h4>
-                            <div className="mt-auto flex items-center justify-between pt-4 border-t border-border/30">
-                                <p className="font-black text-lg tracking-tighter">{product.price}</p>
+                            <h4 className="font-black text-sm uppercase tracking-tight mb-4 transition-colors" style={{ color: `hsl(${style.colors.foreground})` }}>{product.name}</h4>
+                            <div className="mt-auto flex items-center justify-between pt-4 border-t" style={{ borderColor: `hsl(${style.colors.border} / 0.3)` }}>
+                                <p className="font-black text-lg tracking-tighter" style={{ color: `hsl(${style.colors.foreground})` }}>{product.price}</p>
                                 <button
                                     className="p-2 rounded-lg bg-muted hover:bg-foreground hover:text-background transition-all active:scale-90"
                                     style={{ borderRadius: style.radius }}

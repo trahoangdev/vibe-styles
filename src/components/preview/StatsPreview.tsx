@@ -31,18 +31,19 @@ export function StatsPreview({ style, cardStyle, isMobile = false }: StatsPrevie
                             <p className="text-[10px] font-black uppercase tracking-[0.15em] opacity-50 mb-1" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                                 {stat.label}
                             </p>
-                            <p className="text-3xl font-black tracking-tighter" style={{ fontFamily: style.fonts.heading }}>
+                            <p className="text-3xl font-black tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                                 {stat.value}
                             </p>
                             <div className="flex items-center gap-2 mt-2">
-                                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider ${stat.change.startsWith('+') ? 'bg-success/20 text-success' : 'bg-muted/50 text-muted-foreground'}`}
+                                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider`}
                                     style={{
-                                        color: stat.change.startsWith('+') ? `hsl(${style.colors.success})` : 'inherit',
+                                        backgroundColor: stat.change.startsWith('+') ? `hsl(${style.colors.success} / 0.2)` : `hsl(${style.colors.muted} / 0.5)`,
+                                        color: stat.change.startsWith('+') ? `hsl(${style.colors.success})` : `hsl(${style.colors.mutedForeground})`,
                                     }}
                                 >
                                     {stat.change}
                                 </span>
-                                <span className="text-[10px] opacity-40 uppercase tracking-widest font-bold">In last cycle</span>
+                                <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: `hsl(${style.colors.mutedForeground})` }}>In last cycle</span>
                             </div>
                         </div>
                         <div className="p-2 rounded-lg bg-accent/10 group-hover:scale-110 transition-transform" style={{ color: `hsl(${style.colors.accent})` }}>
@@ -51,7 +52,7 @@ export function StatsPreview({ style, cardStyle, isMobile = false }: StatsPrevie
                     </div>
                     {i === 2 && (
                         <div className="mt-6 flex items-center gap-3">
-                            <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-muted/30">
+                            <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: `hsl(${style.colors.muted} / 0.3)` }}>
                                 <div
                                     className="h-full rounded-full transition-all duration-1000"
                                     style={{
@@ -60,7 +61,7 @@ export function StatsPreview({ style, cardStyle, isMobile = false }: StatsPrevie
                                     }}
                                 />
                             </div>
-                            <span className="text-[10px] font-black opacity-60">OPTIMAL</span>
+                            <span className="text-[10px] font-black" style={{ color: `hsl(${style.colors.mutedForeground})` }}>OPTIMAL</span>
                         </div>
                     )}
                 </div>

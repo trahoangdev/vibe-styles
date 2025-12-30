@@ -1,8 +1,10 @@
-import { Square, ChevronDown, ChevronUp } from 'lucide-react';
+import { Square, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { ThemeOverrides } from '@/lib/designStyles';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RadiusSectionProps {
     currentRadius: string;
+    baseRadius?: string;
     overrides: ThemeOverrides;
     onOverridesChange: (overrides: ThemeOverrides) => void;
     isOpen: boolean;
@@ -12,6 +14,7 @@ interface RadiusSectionProps {
 
 export function RadiusSection({
     currentRadius,
+    baseRadius,
     overrides,
     onOverridesChange,
     isOpen,
@@ -26,6 +29,12 @@ export function RadiusSection({
         });
     };
 
+    const resetRadius = () => {
+        const { radius, ...rest } = overrides;
+        onOverridesChange(rest);
+    };
+
+    const hasChanges = overrides.radius !== undefined;
     const terms = ['radius', 'curvature', 'corner', 'round'];
     const isMatch = searchQuery === '' || terms.some(t => t.includes(searchQuery.toLowerCase()));
 
@@ -40,8 +49,29 @@ export function RadiusSection({
                 <div className="flex items-center gap-3">
                     <Square className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     <span className="text-xs font-black uppercase tracking-widest">Curvature Density</span>
+                    {hasChanges && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    )}
                 </div>
-                {isOpen ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
+                <div className="flex items-center gap-2">
+                    {hasChanges && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        resetRadius();
+                                    }}
+                                    className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <RotateCcw className="w-3 h-3" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Reset to default</TooltipContent>
+                        </Tooltip>
+                    )}
+                    {isOpen ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
+                </div>
             </button>
 
             {isOpen && (

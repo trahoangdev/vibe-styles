@@ -29,19 +29,19 @@ export function AuthPreview({ style, cardStyle, buttonStyle, inputStyle, isMobil
 
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h3 className="text-xl font-black tracking-tighter" style={{ fontFamily: style.fonts.heading }}>
+                    <h3 className="text-xl font-black tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                         AUTHENTICATION
                     </h3>
-                    <p className="text-[10px] uppercase tracking-widest opacity-50 font-bold">Secure Access Portal</p>
+                    <p className="text-[10px] uppercase tracking-widest font-bold" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Secure Access Portal</p>
                 </div>
-                <Lock className="w-5 h-5 opacity-40" />
+                <Lock className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
             </div>
 
             <div className="space-y-5">
                 <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest block mb-1.5 opacity-60">Identity</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest block mb-1.5" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Identity</label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                         <input
                             type="email"
                             placeholder="operator@vibestyles.io"
@@ -55,9 +55,9 @@ export function AuthPreview({ style, cardStyle, buttonStyle, inputStyle, isMobil
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest block mb-1.5 opacity-60">Security Key</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest block mb-1.5" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Security Key</label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••••••"
@@ -84,7 +84,7 @@ export function AuthPreview({ style, cardStyle, buttonStyle, inputStyle, isMobil
                             className="w-3 h-3 rounded-none"
                             style={{ accentColor: `hsl(${style.colors.primary})` }}
                         />
-                        <span className="opacity-60 group-hover:opacity-100 transition-opacity">Stay active</span>
+                        <span className="transition-opacity" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Stay active</span>
                     </label>
                     <a
                         href="#"
@@ -106,7 +106,7 @@ export function AuthPreview({ style, cardStyle, buttonStyle, inputStyle, isMobil
                     Initialize Session
                 </button>
 
-                <p className="text-[10px] text-center opacity-40 font-medium">
+                <p className="text-[10px] text-center font-medium" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                     Authorised Personnel Only. IP logged: 192.168.1.1
                 </p>
             </div>
