@@ -7,6 +7,7 @@ interface ShadowsSectionProps {
     onOverridesChange: (overrides: ThemeOverrides) => void;
     isOpen: boolean;
     onToggle: () => void;
+    searchQuery?: string;
 }
 
 export function ShadowsSection({
@@ -14,7 +15,8 @@ export function ShadowsSection({
     overrides,
     onOverridesChange,
     isOpen,
-    onToggle
+    onToggle,
+    searchQuery = ''
 }: ShadowsSectionProps) {
 
     const updateShadowStrength = (value: number) => {
@@ -23,6 +25,11 @@ export function ShadowsSection({
             shadowStrength: value,
         });
     };
+
+    const terms = ['shadow', 'depth', 'elevation', 'light'];
+    const isMatch = searchQuery === '' || terms.some(t => t.includes(searchQuery.toLowerCase()));
+
+    if (!isMatch) return null;
 
     return (
         <section className="border-t border-border/50">

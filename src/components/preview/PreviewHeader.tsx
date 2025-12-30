@@ -1,7 +1,7 @@
 import { type DesignStyle } from '@/lib/designStyles';
 import {
     Search, User, Maximize2, Minimize2, Sliders,
-    Smartphone, Tablet, Monitor, Bug,
+    Smartphone, Tablet, Monitor,
     Sun, Moon
 } from 'lucide-react';
 
@@ -116,20 +116,7 @@ export function PreviewHeader({
                     </button>
                 )}
 
-                {onToggleDebugMode && (
-                    <button
-                        onClick={onToggleDebugMode}
-                        className={`p-2 rounded-lg transition-all duration-300 hover:scale-110 ${isDebugMode ? 'bg-destructive text-destructive-foreground' : 'hover:bg-muted'}`}
-                        style={{
-                            borderRadius: style.radius,
-                            backgroundColor: isDebugMode ? `hsl(${style.colors.error})` : 'transparent',
-                            color: isDebugMode ? 'white' : `hsl(${style.colors.mutedForeground})`
-                        }}
-                        title={isDebugMode ? 'Disable Debug Mode' : 'Enable CSS Debugging'}
-                    >
-                        <Bug className="w-5 h-5" />
-                    </button>
-                )}
+
 
                 {devicePreview !== 'mobile' && (
                     <button
@@ -147,11 +134,11 @@ export function PreviewHeader({
                     style={{ borderRadius: style.radius }}
                     title={`Switch to ${previewTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
                 >
-                    {previewTheme === 'dark' ? (
+                    {/* {previewTheme === 'dark' ? (
                         <Moon className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                     ) : (
                         <Sun className="w-5 h-5" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
-                    )}
+                    )} */}
                 </button>
 
                 <div

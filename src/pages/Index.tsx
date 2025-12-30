@@ -32,11 +32,9 @@ const Index = () => {
     showCommandPalette,
     isSidebarCollapsed,
     isMobileMenuOpen,
-    isDebugMode,
     colorBlindnessMode,
     isMobile,
-    history,
-    historyIndex
+    editorMode,
   } = store;
 
   const sidebarRef = useRef<StyleSidebarRef>(null);
@@ -131,6 +129,12 @@ const Index = () => {
       ...(themeOverrides.fonts || {}),
     },
     radius: themeOverrides.radius ?? selectedStyle.radius,
+    gradients: {
+      ...(selectedStyle.gradients || {}),
+      ...(themeOverrides.gradients || {}),
+    },
+    borderWidth: themeOverrides.borderWidth ?? selectedStyle.borderWidth,
+    density: themeOverrides.density ?? selectedStyle.density,
   };
 
   // Close mobile menu on resize
@@ -221,15 +225,29 @@ const Index = () => {
           onToggleEditor={() => store.toggleEditor()}
           showEditorButton={!isFullScreen}
           isEditorOpen={showEditor}
-          isDebugMode={isDebugMode}
-          onToggleDebugMode={() => store.toggleDebugMode()}
           colorBlindnessMode={colorBlindnessMode}
         />
 
         {/* Theme Editor Panel - Desktop */}
         {!isMobile && showEditor && !isFullScreen && (
-          <div className="hidden md:block animate-slide-in">
-            <ThemeEditor />
+          <div className={cn(
+            "hidden md:block animate-slide-in z-40 transition-all duration-300 ease-spring",
+            editorMode === 'floating'
+              ? "absolute right-6 top-6 bottom-6 h-auto pointer-events-none"
+              : "relative h-full"
+          )}>
+            <div className={cn(
+              editorMode === 'floating' ? "pointer-events-auto h-full rounded-2xl shadow-2xl overflow-hidden" : "h-full"
+            )}>
+              <ThemeEditor
+                className={cn(
+                  "h-full transition-all duration-300",
+                  editorMode === 'floating'
+                    ? "border-0 bg-background/80 backdrop-blur-xl" // Moved borders to wrapper for better shadow
+                    : "bg-card"
+                )}
+              />
+            </div>
           </div>
         )}
 
@@ -265,8 +283,6 @@ const Index = () => {
         currentStyleId={selectedStyle.id}
         onToggleFullScreen={() => store.toggleFullScreen()}
         onToggleEditor={() => store.toggleEditor()}
-        onToggleDebugMode={() => store.toggleDebugMode()}
-        isDebugMode={isDebugMode}
         onCopyStyle={handleCopyStyle}
         onUndo={() => store.undoOverrides()}
         onRedo={() => store.redoOverrides()}

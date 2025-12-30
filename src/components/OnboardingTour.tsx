@@ -1,128 +1,212 @@
-import { useState, useEffect } from 'react';
-import { X, Sparkles, Palette, Code, Layers, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import * as React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Sparkles, Palette, Zap, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function OnboardingTour() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+interface TourStep {
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+}
 
-    useEffect(() => {
-        const hasSeenTour = localStorage.getItem('vibestyle-tour-seen');
-        if (!hasSeenTour) {
-            setIsOpen(true);
-            setTimeout(() => setIsVisible(true), 100);
-        }
-    }, []);
+export interface OnboardingTourProps {
+    onComplete?: () => void;
+    className?: string;
+}
 
-    const handleDismiss = () => {
-        setIsVisible(false);
-        setTimeout(() => {
+export const OnboardingTour: React.FC<OnboardingTourProps> = ({
+    onComplete,
+    className,
+}) => {
+    const [currentStep, setCurrentStep] = React.useState(0);
+    const [isOpen, setIsOpen] = React.useState(true);
+
+    // Check localStorage on mount to maybe suppress it?
+    // The user request did NOT include this logic, so I will omit it to be faithful to the request.
+    // However, I will add a check for the user's sake if they didn't realize it.
+    // Actually, let's just stick to the requested code.
+
+    const steps: TourStep[] = [
+        {
+            title: "Welcome to Vibe Styles",
+            description:
+                "Discover a world of stunning design components and templates that will transform your creative projects.",
+            icon: <Sparkles className="h-12 w-12 text-primary" />,
+        },
+        {
+            title: "Customizable Themes",
+            description:
+                "Choose from a variety of beautiful themes and customize every aspect to match your brand perfectly.",
+            icon: <Palette className="h-12 w-12 text-primary" />,
+        },
+        {
+            title: "Lightning Fast",
+            description:
+                "Built with performance in mind. Experience blazing fast load times and smooth interactions.",
+            icon: <Zap className="h-12 w-12 text-primary" />,
+        },
+    ];
+
+    const totalSteps = steps.length;
+
+    const handleNext = () => {
+        if (currentStep < totalSteps - 1) {
+            setCurrentStep(currentStep + 1);
+        } else {
             setIsOpen(false);
-            localStorage.setItem('vibestyle-tour-seen', 'true');
-        }, 300);
+            onComplete?.();
+        }
+    };
+
+    const handleSkip = () => {
+        setIsOpen(false);
+        onComplete?.();
+    };
+
+    const handlePrevious = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1);
+        }
     };
 
     if (!isOpen) return null;
 
-    const steps = [
-        {
-            icon: Sparkles,
-            title: 'Generate & Explore',
-            desc: 'Use "Feeling Lucky" to discover harmonized themes instantly.',
-            color: 'text-amber-500',
-            bg: 'bg-amber-500/10'
-        },
-        {
-            icon: Palette,
-            title: 'Deep Customization',
-            desc: 'Tweak Google Fonts, A11y scans, and physics in real-time.',
-            color: 'text-purple-500',
-            bg: 'bg-purple-500/10'
-        },
-        {
-            icon: Code,
-            title: 'Export Everywhere',
-            desc: 'Production-ready CSS, Tailwind, SCSS, & Figma tokens.',
-            color: 'text-green-500',
-            bg: 'bg-green-500/10'
-        }
-    ];
+    return (
+        <div className={cn("fixed inset-0 z-50 flex items-center justify-center font-sans", className)}>
+            {/* Overlay */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={handleSkip}
+            />
+
+            {/* Modal */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: "spring", duration: 0.5 }}
+                className="relative z-10 w-full max-w-md rounded-2xl border bg-background p-8 shadow-2xl"
+            >
+                {/* Step Indicator */}
+                <div className="mb-6 flex justify-center space-x-2">
+                    {steps.map((_, index) => (
+                        <div
+                            key={index}
+                            className={cn(
+                                "h-2 rounded-full transition-all duration-300",
+                                index === currentStep
+                                    ? "w-8 bg-primary"
+                                    : index < currentStep
+                                        ? "w-2 bg-primary/50"
+                                        : "w-2 bg-muted"
+                            )}
+                        />
+                    ))}
+                </div>
+
+                {/* Content */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentStep}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-6"
+                    >
+                        {/* Icon */}
+                        <div className="flex justify-center">
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 15,
+                                    delay: 0.1,
+                                }}
+                                className="rounded-full bg-primary/10 p-6"
+                            >
+                                {steps[currentStep].icon}
+                            </motion.div>
+                        </div>
+
+                        {/* Title */}
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                                {steps[currentStep].title}
+                            </h2>
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-center text-muted-foreground">
+                            {steps[currentStep].description}
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Actions */}
+                <div className="mt-8 flex items-center justify-between gap-3">
+                    <Button
+                        variant="ghost"
+                        onClick={handleSkip}
+                        className="text-muted-foreground"
+                    >
+                        Skip
+                    </Button>
+
+                    <div className="flex gap-2">
+                        {currentStep > 0 && (
+                            <Button variant="outline" onClick={handlePrevious}>
+                                Previous
+                            </Button>
+                        )}
+                        <Button onClick={handleNext} className="group">
+                            {currentStep === totalSteps - 1 ? "Get Started" : "Next"}
+                            <ArrowRight
+                                className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                                aria-hidden="true"
+                            />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Step Counter */}
+                <div className="mt-4 text-center text-sm text-muted-foreground">
+                    {currentStep + 1} of {totalSteps}
+                </div>
+            </motion.div>
+        </div>
+    );
+};
+
+export default function OnboardingTourDemo() {
+    const [showTour, setShowTour] = React.useState(true);
 
     return (
-        <div
-            className={cn(
-                "fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-500",
-                isVisible ? "bg-background/80 backdrop-blur-md opacity-100" : "bg-transparent backdrop-blur-none opacity-0"
-            )}
-        >
-            <div
-                className={cn(
-                    "relative w-full max-w-2xl bg-card/50 border border-white/10 shadow-2xl rounded-3xl overflow-hidden transition-all duration-500 transform",
-                    isVisible ? "scale-100 translate-y-0 opacity-100" : "scale-95 translate-y-8 opacity-0"
-                )}
-                style={{
-                    backdropFilter: 'blur(24px)',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-                }}
-            >
-                {/* Decorative Background Gradients */}
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                    <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/20 rounded-full blur-3xl opacity-30" />
-                    <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl opacity-30" />
-                </div>
-
-                <div className="relative p-8 md:p-10 flex flex-col items-center text-center">
-                    <button
-                        onClick={handleDismiss}
-                        className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 transition-colors text-muted-foreground hover:text-foreground"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
-
-                    <div className="mb-8 relative">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center border border-white/10 shadow-card">
-                            <img src="/logo.png" alt="Vibe Styles Logo" className="w-12 h-12 object-contain" />
-                        </div>
-                        <div className="absolute -z-10 inset-0 bg-primary/20 blur-xl animate-pulse" />
-                    </div>
-
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70">
-                        Welcome to Vibe Styles
-                    </h2>
-
-                    <p className="text-lg text-muted-foreground max-w-md mb-10 leading-relaxed">
-                        The ultimate design system generator. Build, customize, and deploy consistent interfaces in seconds.
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-10">
-                        {steps.map((step, i) => (
-                            <div
-                                key={i}
-                                className="group relative p-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1"
-                            >
-                                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 mx-auto transition-transform group-hover:scale-110", step.bg, step.color)}>
-                                    <step.icon className="w-6 h-6" />
-                                </div>
-                                <h3 className="font-bold text-base mb-2">{step.title}</h3>
-                                <p className="text-sm text-muted-foreground/80 leading-snug">
-                                    {step.desc}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <Button
-                        onClick={handleDismiss}
-                        className="group relative px-8 py-6 h-auto text-lg font-bold rounded-xl shadow-lg hover:shadow-primary/25 transition-all w-full md:w-auto overflow-hidden"
-                    >
-                        <span className="relative z-10 flex items-center gap-2">
-                            Start Creating <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </span>
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-600 opacity-100 transition-opacity" />
-                    </Button>
-                </div>
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+            <div className="text-center">
+                <h1 className="mb-4 text-4xl font-bold">Vibe Styles Demo</h1>
+                <p className="mb-8 text-muted-foreground">
+                    Click the button below to restart the onboarding tour
+                </p>
+                <Button onClick={() => setShowTour(true)} size="lg">
+                    Show Onboarding Tour
+                </Button>
             </div>
+
+            {showTour && (
+                <OnboardingTour
+                    onComplete={() => {
+                        setShowTour(false);
+                        console.log("Onboarding completed!");
+                    }}
+                />
+            )}
         </div>
     );
 }
