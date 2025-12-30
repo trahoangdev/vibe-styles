@@ -21,6 +21,7 @@ const TablePreview = lazy(() => import('./TablePreview').then(m => ({ default: m
 const KanbanPreview = lazy(() => import('./KanbanPreview').then(m => ({ default: m.KanbanPreview })));
 const CalendarPreview = lazy(() => import('./CalendarPreview').then(m => ({ default: m.CalendarPreview })));
 const DashboardPreview = lazy(() => import('./DashboardPreview').then(m => ({ default: m.DashboardPreview })));
+const PartifyPreview = lazy(() => import('./PartifyPreview').then(m => ({ default: m.PartifyPreview })));
 const ChartsPreview = lazy(() => import('./ChartsPreview').then(m => ({ default: m.ChartsPreview })));
 
 type DeviceType = 'mobile' | 'tablet' | 'desktop';
@@ -38,8 +39,6 @@ interface StylePreviewProps {
   onToggleEditor?: () => void;
   showEditorButton?: boolean;
   isEditorOpen?: boolean;
-  isDebugMode?: boolean;
-  onToggleDebugMode?: () => void;
   colorBlindnessMode?: ColorBlindnessMode;
 }
 
@@ -50,42 +49,15 @@ export function StylePreview({
   onToggleEditor,
   showEditorButton = false,
   isEditorOpen = false,
-  isDebugMode = false,
-  onToggleDebugMode,
   colorBlindnessMode = 'none'
 }: StylePreviewProps) {
   const [devicePreview, setDevicePreview] = useState<DeviceType>('desktop');
-  const [debugInfo, setDebugInfo] = useState<{ x: number, y: number, label: string } | null>(null);
   const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>(style.theme);
 
   // Sync preview theme when style changes
   useEffect(() => {
     setPreviewTheme(style.theme);
   }, [style.id, style.theme]);
-
-  // Debug mode hover listener
-  useEffect(() => {
-    if (!isDebugMode) {
-      setDebugInfo(null);
-      return;
-    }
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
-
-      let label = target.tagName.toLowerCase();
-      if (target.className && typeof target.className === 'string') {
-        const classes = target.className.split(' ').filter(c => !c.startsWith('hover:') && !c.startsWith('transition-'));
-        if (classes.length > 0) label += `.${classes[0].substring(0, 15)}...`;
-      }
-
-      setDebugInfo({ x: e.clientX, y: e.clientY, label });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isDebugMode]);
 
   const activeColors = useMemo(() => {
     if (previewTheme === style.theme) return style.colors;
@@ -117,44 +89,36 @@ export function StylePreview({
     '--style-fg': activeColors.foreground,
     '--style-heading-weight': style.fonts.headingWeight || '700',
     '--style-body-weight': style.fonts.bodyWeight || '400',
+    '--style-type-scale': style.fonts.scale || 1.25,
     '--style-shadow-opacity': style.shadowStrength ?? 0.2,
+    '--style-border-width': style.borderWidth || '1px',
+    '--style-density': style.density || 1,
+    '--style-bg-gradient': style.gradients?.background,
 
     // Map standard Tailwind variables to the preview style
     '--primary': activeColors.primary,
-    '--primary-foreground': activeColors.primaryForeground,
-    '--muted': activeColors.muted,
-    '--muted-foreground': activeColors.mutedForeground,
-    '--accent': activeColors.accent,
-    '--accent-foreground': activeColors.accentForeground,
-    '--background': activeColors.background,
-    '--foreground': activeColors.foreground,
-    '--card': activeColors.surface,
-    '--card-foreground': activeColors.surfaceForeground,
-    '--popover': activeColors.surface,
-    '--popover-foreground': activeColors.surfaceForeground,
-    '--border': activeColors.border,
-    '--input': activeColors.border,
-    '--ring': activeColors.primary,
+
+    // ... (lines 125-140 unchanged)
     '--radius': style.radius,
-  } as React.CSSProperties), [activeColors, style.radius, style.fonts, style.shadowStrength]);
+  } as React.CSSProperties), [activeColors, style.radius, style.fonts, style.shadowStrength, style.borderWidth, style.density]);
 
   const isNeoBrutalism = style.id === 'neo-brutalism';
   const isSwissMinimal = style.id === 'swiss-minimal';
 
 
   const cardStyle = useMemo(() => {
-    if (isNeoBrutalism) return 'border-2 border-foreground shadow-[4px_4px_0_0_hsl(var(--style-fg))] transition-all duration-300 hover:shadow-[6px_6px_0_0_hsl(var(--style-fg))] hover:-translate-x-0.5 hover:-translate-y-0.5';
-    if (isSwissMinimal) return 'border border-[hsl(var(--style-border))] transition-all duration-300 hover:border-[hsl(var(--style-fg)/0.3)] shadow-none';
-    return 'border border-[hsl(var(--style-border))] shadow-soft transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[hsl(var(--style-primary)/0.3)]';
+    if (isNeoBrutalism) return 'border-[length:var(--style-border-width)] border-foreground shadow-[4px_4px_0_0_hsl(var(--style-fg))] transition-all duration-300 hover:shadow-[6px_6px_0_0_hsl(var(--style-fg))] hover:-translate-x-0.5 hover:-translate-y-0.5';
+    if (isSwissMinimal) return 'border-[length:var(--style-border-width)] border-[hsl(var(--style-border))] transition-all duration-300 hover:border-[hsl(var(--style-fg)/0.3)] shadow-none';
+    return 'border-[length:var(--style-border-width)] border-[hsl(var(--style-border))] shadow-soft transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[hsl(var(--style-primary)/0.3)]';
   }, [isNeoBrutalism, isSwissMinimal]);
 
   const buttonStyle = isNeoBrutalism
-    ? 'border-2 border-foreground shadow-[3px_3px_0_0_currentColor] hover:shadow-[1px_1px_0_0_currentColor] hover:translate-x-[2px] hover:translate-y-[2px]'
+    ? 'border-[length:var(--style-border-width)] border-foreground shadow-[3px_3px_0_0_currentColor] hover:shadow-[1px_1px_0_0_currentColor] hover:translate-x-[2px] hover:translate-y-[2px]'
     : '';
 
   const inputStyle = isNeoBrutalism
-    ? 'border-2 border-foreground'
-    : 'border border-[hsl(var(--style-border))]';
+    ? 'border-[length:var(--style-border-width)] border-foreground'
+    : 'border-[length:var(--style-border-width)] border-[hsl(var(--style-border))]';
 
   const activeStyle = useMemo(() => ({
     ...style,
@@ -172,7 +136,50 @@ export function StylePreview({
         filter: colorBlindnessMode !== 'none' ? `url(#${colorBlindnessMode})` : undefined,
       }}
     >
-      {/* ... (svg filters) ... */}
+      <svg className="sr-only">
+        <defs>
+          <filter id="protanopia">
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="0.567 0.433 0 0 0
+                      0.558 0.442 0 0 0
+                      0 0.242 0.758 0 0
+                      0 0 0 1 0"
+            />
+          </filter>
+          <filter id="deuteranopia">
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="0.625 0.375 0 0 0
+                      0.7 0.3 0 0 0
+                      0 0.3 0.7 0 0
+                      0 0 0 1 0"
+            />
+          </filter>
+          <filter id="tritanopia">
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="0.95 0.05 0 0 0
+                      0 0.433 0.567 0 0
+                      0 0.475 0.525 0 0
+                      0 0 0 1 0"
+            />
+          </filter>
+          <filter id="achromatopsia">
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="0.299 0.587 0.114 0 0
+                      0.299 0.587 0.114 0 0
+                      0.299 0.587 0.114 0 0
+                      0 0 0 1 0"
+            />
+          </filter>
+        </defs>
+      </svg>
 
       <DevicePreviewControls
         style={activeStyle}
@@ -188,6 +195,7 @@ export function StylePreview({
           maxWidth: '100%',
           minHeight: devicePreview !== 'desktop' ? 'calc(100vh - 120px)' : 'auto',
           backgroundColor: `hsl(${activeColors.background})`,
+          backgroundImage: 'var(--style-bg-gradient)',
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
@@ -200,18 +208,20 @@ export function StylePreview({
           onToggleEditor={onToggleEditor}
           isFullScreen={isFullScreen}
           onToggleFullScreen={onToggleFullScreen}
-          isDebugMode={isDebugMode}
-          onToggleDebugMode={onToggleDebugMode}
           previewTheme={previewTheme}
           onTogglePreviewTheme={() => setPreviewTheme(t => t === 'light' ? 'dark' : 'light')}
         />
 
         <main
           key={style.id}
-          className={`p-4 md:p-8 lg:p-12 mx-auto animate-fade-in flex flex-col gap-24 ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
+          className={`preview-content p-4 md:p-8 lg:p-12 mx-auto animate-fade-in flex flex-col ${devicePreview === 'mobile' ? 'max-w-full' : devicePreview === 'tablet' ? 'max-w-3xl' : 'max-w-7xl'}`}
+          style={{ gap: `calc(6rem * var(--style-density))` }}
         >
 
-          <div className={`grid gap-12 items-start ${devicePreview === 'desktop' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}>
+          <div
+            className={`grid items-start ${devicePreview === 'desktop' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}
+            style={{ gap: `calc(3rem * var(--style-density))` }}
+          >
             <HeroPreview
               style={activeStyle}
               buttonStyle={buttonStyle}
@@ -220,6 +230,32 @@ export function StylePreview({
             />
 
             <style>{`
+        :root {
+          --scale-factor: var(--style-type-scale);
+        }
+        
+        /* Modular Scale Typography */
+        .preview-content h1, .preview-content .text-5xl, .preview-content .text-4xl { 
+            font-size: calc(1rem * var(--scale-factor) * var(--scale-factor) * var(--scale-factor) * var(--scale-factor) * var(--scale-factor)); 
+            line-height: 1.1;
+        }
+        .preview-content h2, .preview-content .text-3xl { 
+            font-size: calc(1rem * var(--scale-factor) * var(--scale-factor) * var(--scale-factor) * var(--scale-factor)); 
+            line-height: 1.2;
+        }
+        .preview-content h3, .preview-content .text-2xl { 
+            font-size: calc(1rem * var(--scale-factor) * var(--scale-factor) * var(--scale-factor)); 
+            line-height: 1.3;
+        }
+        .preview-content h4, .preview-content .text-xl { 
+            font-size: calc(1rem * var(--scale-factor) * var(--scale-factor)); 
+            line-height: 1.4;
+        }
+        .preview-content h5, .preview-content .text-lg { 
+            font-size: calc(1rem * var(--scale-factor)); 
+            line-height: 1.5;
+        }
+
         .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / var(--style-shadow-opacity)); }
         .shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / var(--style-shadow-opacity)), 0 1px 2px -1px rgb(0 0 0 / var(--style-shadow-opacity)); }
         .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / var(--style-shadow-opacity)), 0 2px 4px -2px rgb(0 0 0 / var(--style-shadow-opacity)); }
@@ -352,6 +388,13 @@ export function StylePreview({
             <DashboardPreview
               style={activeStyle}
               cardStyle={cardStyle}
+              isMobile={devicePreview === 'mobile'}
+            />
+          </Suspense>
+
+          <Suspense fallback={<div className="w-full h-[600px] bg-muted/5 animate-pulse rounded-3xl" />}>
+            <PartifyPreview
+              style={activeStyle}
               isMobile={devicePreview === 'mobile'}
             />
           </Suspense>

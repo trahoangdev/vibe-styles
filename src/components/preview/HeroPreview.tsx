@@ -52,7 +52,7 @@ export function HeroPreview({ style, buttonStyle, inputStyle, isMobile = false }
                     Explore Assets
                 </button>
                 <button
-                    className={`px-8 py-3.5 text-sm font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg border border-border ${inputStyle}`}
+                    className={`px-8 py-3.5 text-sm font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg ${inputStyle}`}
                     style={{
                         backgroundColor: 'transparent',
                         color: `hsl(${style.colors.foreground})`,

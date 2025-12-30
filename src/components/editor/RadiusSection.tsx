@@ -7,6 +7,7 @@ interface RadiusSectionProps {
     onOverridesChange: (overrides: ThemeOverrides) => void;
     isOpen: boolean;
     onToggle: () => void;
+    searchQuery?: string;
 }
 
 export function RadiusSection({
@@ -14,7 +15,8 @@ export function RadiusSection({
     overrides,
     onOverridesChange,
     isOpen,
-    onToggle
+    onToggle,
+    searchQuery = ''
 }: RadiusSectionProps) {
 
     const updateRadius = (value: string) => {
@@ -23,6 +25,11 @@ export function RadiusSection({
             radius: value,
         });
     };
+
+    const terms = ['radius', 'curvature', 'corner', 'round'];
+    const isMatch = searchQuery === '' || terms.some(t => t.includes(searchQuery.toLowerCase()));
+
+    if (!isMatch) return null;
 
     return (
         <section className="border-t border-border/50">

@@ -19,7 +19,6 @@ import {
     Rocket,
     Moon,
     Sun,
-    Bug,
     RotateCcw,
     RotateCw
 } from "lucide-react";
@@ -33,8 +32,6 @@ interface CommandPaletteProps {
     currentStyleId: string;
     onToggleFullScreen: () => void;
     onToggleEditor: () => void;
-    onToggleDebugMode: () => void;
-    isDebugMode: boolean;
     onCopyStyle: () => void;
     onUndo: () => void;
     onRedo: () => void;
@@ -47,8 +44,6 @@ export function CommandPalette({
     currentStyleId,
     onToggleFullScreen,
     onToggleEditor,
-    onToggleDebugMode,
-    isDebugMode,
     onCopyStyle,
     onUndo,
     onRedo
@@ -102,11 +97,6 @@ export function CommandPalette({
                         <Maximize2 className="mr-2 h-4 w-4" />
                         <span>Toggle Fullscreen</span>
                         <CommandShortcut>F</CommandShortcut>
-                    </CommandItem>
-                    <CommandItem onSelect={() => runCommand(onToggleDebugMode)}>
-                        <Bug className="mr-2 h-4 w-4" />
-                        <span>{isDebugMode ? 'Disable' : 'Enable'} Debug Mode</span>
-                        <CommandShortcut>B</CommandShortcut>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(toggleTheme)}>
                         {theme === 'dark' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}

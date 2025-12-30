@@ -17,6 +17,8 @@ export interface ThemeConfig {
     };
     radius: string;
     shadowStrength: number;
+    borderWidth: string;
+    density: number;
 }
 
 export function useThemeExport(theme: ThemeConfig) {
@@ -34,8 +36,10 @@ export function useThemeExport(theme: ThemeConfig) {
         lines.push(`  --font-heading: "${theme.fonts.heading.split(',')[0]}";`);
         lines.push(`  --font-body: "${theme.fonts.body.split(',')[0]}";`);
         lines.push('');
-        lines.push(`  /* Border Radius */`);
+        lines.push(`  /* Layout */`);
         lines.push(`  --radius: ${theme.radius};`);
+        lines.push(`  --border-width: ${theme.borderWidth};`);
+        lines.push(`  --spacing-multiplier: ${theme.density};`);
         lines.push('');
         lines.push(`  /* Effects */`);
         lines.push(`  --shadow-strength: ${theme.shadowStrength};`);
@@ -62,6 +66,10 @@ export function useThemeExport(theme: ThemeConfig) {
                     borderRadius: {
                         DEFAULT: theme.radius,
                     },
+                    borderWidth: {
+                        DEFAULT: theme.borderWidth,
+                    },
+                    // Density handled via utility class or CSS variable
                 },
             },
         };
@@ -90,8 +98,9 @@ export function useThemeExport(theme: ThemeConfig) {
             `$font-heading: "${theme.fonts.heading.split(',')[0]}";`,
             `$font-body: "${theme.fonts.body.split(',')[0]}";`,
             ``,
-            `// Radius`,
-            `$radius: ${theme.radius};`
+            `// Layout`,
+            `$radius: ${theme.radius};`,
+            `$border-width: ${theme.borderWidth};`
         ];
         return lines.join('\n');
     }, [theme]);
@@ -112,6 +121,9 @@ export function useThemeExport(theme: ThemeConfig) {
             },
             radii: {
                 default: theme.radius,
+            },
+            borderWidths: {
+                default: theme.borderWidth
             }
         };
         return `export const theme = ${JSON.stringify(config, null, 2)};`;
@@ -130,6 +142,9 @@ export function useThemeExport(theme: ThemeConfig) {
                 },
                 borderRadius: {
                     default: { value: theme.radius, type: 'borderRadius' }
+                },
+                borderWidth: {
+                    default: { value: theme.borderWidth, type: 'borderWidth' }
                 }
             }
         };

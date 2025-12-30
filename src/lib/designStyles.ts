@@ -31,6 +31,12 @@ export interface Typography {
   mono?: string;
   headingWeight?: string;
   bodyWeight?: string;
+  scale?: number; // Modular scale ratio (e.g. 1.2, 1.25, 1.333, 1.414, 1.5, 1.618)
+}
+
+export interface Gradients {
+  background?: string;
+  text?: string;
 }
 
 export interface DesignStyle {
@@ -42,28 +48,28 @@ export interface DesignStyle {
   category: StyleCategory[];
   fonts: Typography;
   colors: ColorPalette;
+  gradients?: Gradients;
   radius: string;
   shadowStrength?: number; // 0 to 1 scale
+  borderWidth: string; // e.g. '1px'
+  density?: number; // 0.5 (compact) to 1.5 (relaxed), default 1
   characteristics: string[];
 }
 
 export interface ThemeOverrides {
-  colors?: {
-    primary?: string;
-    accent?: string;
-    muted?: string;
-    background?: string;
-    foreground?: string;
-    surface?: string;
-  };
+  colors?: Partial<ColorPalette>;
   fonts?: {
     heading?: string;
     body?: string;
     headingWeight?: string;
     bodyWeight?: string;
+    scale?: number;
   };
+  gradients?: Gradients;
   radius?: string;
   shadowStrength?: number;
+  borderWidth?: string;
+  density?: number;
 }
 
 export interface Preset {
@@ -105,6 +111,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 84% 60%',
     },
     radius: '0.75rem',
+    borderWidth: '1px',
     characteristics: [
       'Generous whitespace and breathing room',
       'Subtle translucent blur effects',
@@ -143,6 +150,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 72% 51%',
     },
     radius: '0.5rem',
+    borderWidth: '0px',
     characteristics: [
       'Pure black background (#121212)',
       'Signature Spotify Green (#1DB954)',
@@ -181,6 +189,7 @@ export const designStyles: DesignStyle[] = [
       error: '5 60% 50%',
     },
     radius: '0.125rem',
+    borderWidth: '1px',
     characteristics: [
       'Warm, cream-toned backgrounds',
       'Elegant serif headings (Playfair, Garamond)',
@@ -219,6 +228,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 0% 20%',
     },
     radius: '0',
+    borderWidth: '1px',
     characteristics: [
       'Pure black and white only',
       'No shadows, pure borders',
@@ -257,6 +267,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 90% 55%',
     },
     radius: '0.25rem',
+    borderWidth: '3px',
     characteristics: [
       'Hard black borders (2-3px)',
       'Offset box shadows (4px 4px)',
@@ -295,6 +306,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 70% 50%',
     },
     radius: '0.375rem',
+    borderWidth: '1px',
     characteristics: [
       'Elegant serif/sans pairing',
       'Subtle warm undertones',
@@ -333,6 +345,7 @@ export const designStyles: DesignStyle[] = [
       error: '4 90% 58%',
     },
     radius: '0.75rem',
+    borderWidth: '0px',
     characteristics: [
       'Elevated surfaces with layered shadows',
       'Primary purple/deep purple tones',
@@ -371,6 +384,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 84% 60%',
     },
     radius: '0.5rem',
+    borderWidth: '1px',
     characteristics: [
       'Indigo-600 as primary accent',
       'Clean white backgrounds',
@@ -409,6 +423,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 72% 51%',
     },
     radius: '0.625rem',
+    borderWidth: '1px',
     characteristics: [
       'Dark navy/charcoal backgrounds',
       'Signature purple/violet accent',
@@ -447,6 +462,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 70% 55%',
     },
     radius: '0.25rem',
+    borderWidth: '1px',
     characteristics: [
       'White/off-white backgrounds',
       'Georgia serif for headings',
@@ -485,6 +501,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 72% 51%',
     },
     radius: '0.375rem',
+    borderWidth: '1px',
     characteristics: [
       'Functional, no-nonsense layouts',
       'Blue link color (#0969da)',
@@ -523,6 +540,7 @@ export const designStyles: DesignStyle[] = [
       error: '359 82% 59%',
     },
     radius: '0.5rem',
+    borderWidth: '0px',
     characteristics: [
       'Dark gray backgrounds (#313338)',
       'Blurple accent (#5865F2)',
@@ -561,6 +579,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 84% 60%',
     },
     radius: '0.5rem',
+    borderWidth: '1px',
     characteristics: [
       'Signature purple/indigo (#635BFF)',
       'Gradient mesh backgrounds',
@@ -599,6 +618,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 90% 60%',
     },
     radius: '0.5rem',
+    borderWidth: '1px',
     characteristics: [
       'Pure black (#000) background',
       'White text and accents',
@@ -637,6 +657,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 84% 60%',
     },
     radius: '0.75rem',
+    borderWidth: '0px',
     characteristics: [
       'Signature Dribbble pink (#EA4C89)',
       'Soft, rounded corners (12px)',
@@ -676,6 +697,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 100% 60%',
     },
     radius: '0', // Sharp corners
+    borderWidth: '2px',
     characteristics: [
       'Neon glow effects',
       'Sharp, angular corners',
@@ -714,6 +736,7 @@ export const designStyles: DesignStyle[] = [
       error: '0 91% 60%',
     },
     radius: '1.25rem',
+    borderWidth: '1px',
     characteristics: [
       'True Black depth (#0A0A0B)',
       'Electric Violet accents (#A855F7)',
@@ -721,6 +744,45 @@ export const designStyles: DesignStyle[] = [
       'Inter tight tracking (-0.02em)',
       'Subtle border glows and high-contrast lines',
       'Fluid motion and spring-based hovers',
+    ],
+  },
+  {
+    id: 'partify',
+    name: 'Partify',
+    description: 'Modern 3D dashboard aesthetic. Crisp white surfaces, bright lime accents, and soft tech feel.',
+    icon: 'box',
+    theme: 'light',
+    category: ['tech', 'minimalist'],
+    fonts: {
+      heading: '"Space Grotesk", "Inter", sans-serif',
+      body: '"Inter", sans-serif',
+      mono: '"Space Mono", monospace',
+    },
+    colors: {
+      primary: '75 95% 55%',
+      primaryForeground: '0 0% 0%',
+      accent: '75 95% 55%',
+      accentForeground: '0 0% 0%',
+      background: '220 10% 94%',
+      foreground: '220 15% 10%',
+      surface: '0 0% 100%',
+      surfaceForeground: '220 15% 10%',
+      muted: '220 10% 96%',
+      mutedForeground: '220 10% 45%',
+      border: '220 10% 90%',
+      success: '76 90% 60%',
+      warning: '40 95% 60%',
+      error: '0 85% 60%',
+    },
+    radius: '1rem',
+    borderWidth: '1px',
+    characteristics: [
+      'Bright Lime Green (#CFFF04) accents',
+      'Soft gray background (#F0F0F3)',
+      'Clean white cards with soft shadows',
+      'Space Grotesk for technical feel',
+      'Rounded, accessible UI elements',
+      '3D-ready canvas aesthetic',
     ],
   },
 ];
@@ -750,8 +812,12 @@ ${style.characteristics.map(c => ` * - ${c}`).join('\n')}
   --warning: ${style.colors.warning};
   --error: ${style.colors.error};
   
-  /* Border Radius */
+  /* Border Radius & Width */
   --radius: ${style.radius};
+  --border-width: ${style.borderWidth};
+
+  /* Spacing */
+  --spacing-multiplier: ${style.density || 1};
   
   /* Typography */
   --font-heading: ${style.fonts.heading};

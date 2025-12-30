@@ -2,6 +2,13 @@ import { useMemo } from 'react';
 import { Eye, ChevronDown, ChevronUp, ShieldCheck, Activity } from 'lucide-react';
 import { ColorBlindnessMode } from '@/lib/designStyles';
 import { getRelativeLuminance, getContrastRatio } from '@/lib/colorUtils';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 interface A11yPanelProps {
     currentColors: {
@@ -62,17 +69,21 @@ export function A11yPanel({
                     {/* Simulation Dropdown */}
                     <div className="space-y-2">
                         <label className="text-[9px] font-black tracking-[0.2em] opacity-40 block">VISION SIMULATOR</label>
-                        <select
+                        <Select
                             value={colorBlindnessMode}
-                            onChange={(e) => onColorBlindnessModeChange(e.target.value as ColorBlindnessMode)}
-                            className="w-full px-4 py-3 text-xs bg-muted/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none font-bold placeholder-muted-foreground"
+                            onValueChange={(value) => onColorBlindnessModeChange(value as ColorBlindnessMode)}
                         >
-                            <option value="none">Standard Vision</option>
-                            <option value="protanopia">Protanopia (Red-Blind)</option>
-                            <option value="deuteranopia">Deuteranopia (Green-Blind)</option>
-                            <option value="tritanopia">Tritanopia (Blue-Blind)</option>
-                            <option value="achromatopsia">Achromatopsia (Monochromacy)</option>
-                        </select>
+                            <SelectTrigger className="w-full bg-muted/50 border-border rounded-xl font-bold text-xs h-10">
+                                <SelectValue placeholder="Select Mode" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">Standard Vision</SelectItem>
+                                <SelectItem value="protanopia">Protanopia (Red-Blind)</SelectItem>
+                                <SelectItem value="deuteranopia">Deuteranopia (Green-Blind)</SelectItem>
+                                <SelectItem value="tritanopia">Tritanopia (Blue-Blind)</SelectItem>
+                                <SelectItem value="achromatopsia">Achromatopsia (Monochromacy)</SelectItem>
+                            </SelectContent>
+                        </Select>
                         {colorBlindnessMode !== 'none' && (
                             <p className="text-[10px] text-muted-foreground bg-primary/5 p-2 rounded-lg border border-primary/10">
                                 <Activity className="w-3 h-3 inline mr-1 mb-0.5" />

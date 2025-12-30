@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { DesignStyle, ThemeOverrides, ColorBlindnessMode, designStyles } from '@/lib/designStyles';
-import { generateRandomTheme } from '@/lib/themeGenerator';
+import { generateRandomTheme, HarmonyStrategy, generateThemeFromPrompt } from '@/lib/themeGenerator';
 
 interface ThemeState {
     // Selection & Overrides
@@ -11,29 +11,41 @@ interface ThemeState {
     // Undo/Redo History for Overrides
     history: ThemeOverrides[];
     historyIndex: number;
+    snapshots: ThemeOverrides[]; // Saved states
 
     // UI State
     isFullScreen: boolean;
     showEditor: boolean;
+    editorMode: 'sidebar' | 'floating';
     showShortcuts: boolean;
     showCommandPalette: boolean;
     isSidebarCollapsed: boolean;
     isMobileMenuOpen: boolean;
-    isDebugMode: boolean;
+
     colorBlindnessMode: ColorBlindnessMode;
     isMobile: boolean;
+
+    // State
+    lockedColors: string[];
 
     // Actions
     setSelectedStyle: (style: DesignStyle) => void;
     setThemeOverrides: (overrides: ThemeOverrides | ((prev: ThemeOverrides) => ThemeOverrides)) => void;
+    toggleColorLock: (key: string) => void;
     undoOverrides: () => void;
     redoOverrides: () => void;
     resetOverrides: () => void;
-    randomizeTheme: () => void;
+    randomizeTheme: (strategy?: HarmonyStrategy) => void;
+    generateFromPrompt: (prompt: string) => Promise<void>;
+    addSnapshot: () => void;
+    deleteSnapshot: (index: number) => void;
+    restoreSnapshot: (index: number) => void;
+    jumpToHistory: (index: number) => void;
 
     toggleFullScreen: () => void;
     toggleEditor: () => void;
     setShowEditor: (show: boolean) => void;
+    setEditorMode: (mode: 'sidebar' | 'floating') => void;
     toggleShortcuts: () => void;
     setShowShortcuts: (show: boolean) => void;
     setShowCommandPalette: (show: boolean) => void;
@@ -41,7 +53,7 @@ interface ThemeState {
     setSidebarCollapsed: (collapsed: boolean) => void;
     toggleMobileMenu: () => void;
     setMobileMenuOpen: (open: boolean) => void;
-    toggleDebugMode: () => void;
+
     setColorBlindnessMode: (mode: ColorBlindnessMode) => void;
     setIsMobile: (isMobile: boolean) => void;
 }
@@ -54,14 +66,17 @@ export const useThemeStore = create<ThemeState>()(
             themeOverrides: {},
             history: [{}],
             historyIndex: 0,
+            snapshots: [],
+            lockedColors: [],
 
             isFullScreen: false,
             showEditor: false,
+            editorMode: 'sidebar',
             showShortcuts: false,
             showCommandPalette: false,
             isSidebarCollapsed: false,
             isMobileMenuOpen: false,
-            isDebugMode: false,
+
             colorBlindnessMode: 'none',
             isMobile: false,
 
@@ -70,7 +85,8 @@ export const useThemeStore = create<ThemeState>()(
                 selectedStyle: style,
                 themeOverrides: {},
                 history: [{}],
-                historyIndex: 0
+                historyIndex: 0,
+                lockedColors: []
             }),
 
             setThemeOverrides: (overridesOrFn) => {
@@ -86,6 +102,12 @@ export const useThemeStore = create<ThemeState>()(
                     historyIndex: newHistory.length - 1
                 });
             },
+
+            toggleColorLock: (key) => set((state) => ({
+                lockedColors: state.lockedColors.includes(key)
+                    ? state.lockedColors.filter(k => k !== key)
+                    : [...state.lockedColors, key]
+            })),
 
             undoOverrides: () => {
                 const { history, historyIndex } = get();
@@ -114,18 +136,77 @@ export const useThemeStore = create<ThemeState>()(
                 set({
                     themeOverrides: {},
                     history: newHistory,
-                    historyIndex: 0
+                    historyIndex: 0,
+                    lockedColors: []
                 });
             },
 
-            randomizeTheme: () => {
-                const randomTheme = generateRandomTheme();
+            randomizeTheme: (strategy?: HarmonyStrategy) => {
+                const randomTheme = generateRandomTheme(strategy);
+                const currentOverrides = get().themeOverrides;
+                const locked = get().lockedColors;
+
+                if (randomTheme.colors) {
+                    const newColors = { ...randomTheme.colors };
+                    locked.forEach(key => {
+                        const currentColorsOverride = currentOverrides.colors || {};
+                        if (currentColorsOverride[key as keyof typeof currentColorsOverride]) {
+                            // @ts-ignore
+                            newColors[key] = currentColorsOverride[key as keyof typeof currentColorsOverride]
+                        } else {
+                            // @ts-ignore
+                            delete newColors[key];
+                        }
+                    });
+                    randomTheme.colors = newColors;
+                }
+
                 get().setThemeOverrides(randomTheme);
+            },
+
+            generateFromPrompt: async (prompt: string) => {
+                const aiTheme = await generateThemeFromPrompt(prompt);
+                const currentOverrides = get().themeOverrides;
+                const locked = get().lockedColors;
+
+                if (aiTheme.colors) {
+                    const newColors = { ...aiTheme.colors };
+                    locked.forEach(key => {
+                        const currentColorsOverride = currentOverrides.colors || {};
+                        if (currentColorsOverride[key as keyof typeof currentColorsOverride]) {
+                            // @ts-ignore
+                            newColors[key] = currentColorsOverride[key as keyof typeof currentColorsOverride]
+                        } else {
+                            // @ts-ignore
+                            delete newColors[key];
+                        }
+                    });
+                    aiTheme.colors = newColors;
+                }
+
+                get().setThemeOverrides(aiTheme);
+            },
+
+            addSnapshot: () => set((state) => ({ snapshots: [...state.snapshots, state.themeOverrides] })),
+            deleteSnapshot: (index) => set((state) => ({ snapshots: state.snapshots.filter((_, i) => i !== index) })),
+            restoreSnapshot: (index) => {
+                const snapshot = get().snapshots[index];
+                if (snapshot) get().setThemeOverrides(snapshot);
+            },
+            jumpToHistory: (index) => {
+                const history = get().history;
+                if (index >= 0 && index < history.length) {
+                    set({
+                        themeOverrides: history[index],
+                        historyIndex: index
+                    });
+                }
             },
 
             toggleFullScreen: () => set((state) => ({ isFullScreen: !state.isFullScreen })),
             toggleEditor: () => set((state) => ({ showEditor: !state.showEditor })),
             setShowEditor: (show) => set({ showEditor: show }),
+            setEditorMode: (mode) => set({ editorMode: mode }),
             toggleShortcuts: () => set((state) => ({ showShortcuts: !state.showShortcuts })),
             setShowShortcuts: (show) => set({ showShortcuts: show }),
             setShowCommandPalette: (show) => set({ showCommandPalette: show }),
@@ -133,7 +214,7 @@ export const useThemeStore = create<ThemeState>()(
             setSidebarCollapsed: (collapsed) => set({ isSidebarCollapsed: collapsed }),
             toggleMobileMenu: () => set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
             setMobileMenuOpen: (open) => set({ isMobileMenuOpen: open }),
-            toggleDebugMode: () => set((state) => ({ isDebugMode: !state.isDebugMode })),
+
             setColorBlindnessMode: (mode) => set({ colorBlindnessMode: mode }),
             setIsMobile: (isMobile) => set({ isMobile }),
         }),
@@ -146,8 +227,10 @@ export const useThemeStore = create<ThemeState>()(
                 themeOverrides: state.themeOverrides,
                 history: state.history,
                 historyIndex: state.historyIndex,
+                snapshots: state.snapshots,
                 isSidebarCollapsed: state.isSidebarCollapsed,
-                // Do not persist UI toggles like isFullScreen, showEditor, etc. if not desired, 
+                editorMode: state.editorMode,
+                // Do not persist UI toggles like isFullScreen, showEditor, etc. if not desired,  
                 // but persist history and selection is crucial.
             }),
         }
