@@ -31,25 +31,27 @@ export function CommunicationPreview({ style, cardStyle, inputStyle, isMobile = 
                         </div>
                         <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-surface bg-success" style={{ backgroundColor: `hsl(${style.colors.success})` }} />
                     </div>
-                    <div className="flex-1">
-                        <p className="font-black text-xs uppercase tracking-tight">Vibe Assistant</p>
-                        <p className="text-[10px] uppercase font-bold text-success animate-pulse" style={{ color: `hsl(${style.colors.success})` }}>Active Support</p>
-                    </div>
-                    <button className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                        <MoreVertical className="w-4 h-4 opacity-40" />
-                    </button>
+                    <div>
+                    <p className="font-black text-xs uppercase tracking-tight" style={{ color: `hsl(${style.colors.foreground})` }}>Vibe Assistant</p>
+                    <p className="text-[10px] uppercase font-bold animate-pulse" style={{ color: `hsl(${style.colors.success})` }}>Active Support</p>
+                </div>
+                <button className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <MoreVertical className="w-4 h-4" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
+                </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2 scrollbar-thin">
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center bg-muted/50">
-                            <MessageCircle className="w-4 h-4 opacity-40" />
+                        <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: `hsl(${style.colors.muted} / 0.5)` }}>
+                            <MessageCircle className="w-4 h-4" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                         </div>
                         <div
-                            className="px-4 py-3 text-sm font-medium leading-relaxed max-w-[85%] border border-border/10"
+                            className="px-4 py-3 text-sm font-medium leading-relaxed max-w-[85%] border"
                             style={{
                                 backgroundColor: `hsl(${style.colors.muted})`,
                                 borderRadius: style.radius,
+                                borderColor: `hsl(${style.colors.border} / 0.1)`,
+                                color: `hsl(${style.colors.foreground})`
                             }}
                         >
                             How are you feeling about this current design system? 🧪
@@ -71,14 +73,16 @@ export function CommunicationPreview({ style, cardStyle, inputStyle, isMobile = 
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center bg-muted/50">
-                            <MessageCircle className="w-4 h-4 opacity-40" />
+                        <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: `hsl(${style.colors.muted} / 0.5)` }}>
+                            <MessageCircle className="w-4 h-4" style={{ color: `hsl(${style.colors.mutedForeground})` }} />
                         </div>
                         <div
-                            className="px-4 py-3 text-sm font-medium leading-relaxed max-w-[85%] border border-border/10"
+                            className="px-4 py-3 text-sm font-medium leading-relaxed max-w-[85%] border"
                             style={{
                                 backgroundColor: `hsl(${style.colors.muted})`,
                                 borderRadius: style.radius,
+                                borderColor: `hsl(${style.colors.border} / 0.1)`,
+                                color: `hsl(${style.colors.foreground})`
                             }}
                         >
                             Optimal selection. You can now deploy these tokens directly to production.
@@ -125,8 +129,8 @@ export function CommunicationPreview({ style, cardStyle, inputStyle, isMobile = 
                         <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
                                 <div>
-                                    <p className="font-black text-lg tracking-tighter">VIBE OPERATOR</p>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Lead Architect</p>
+                                    <p className="font-black text-lg tracking-tighter" style={{ color: `hsl(${style.colors.foreground})` }}>VIBE OPERATOR</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Lead Architect</p>
                                 </div>
                                 <button
                                     className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest border border-border hover:bg-foreground hover:text-background transition-all`}
@@ -157,8 +161,8 @@ export function CommunicationPreview({ style, cardStyle, inputStyle, isMobile = 
                             { label: 'RATING', value: '98%' },
                         ].map(stat => (
                             <div key={stat.label} className="text-center group-hover:scale-105 transition-transform">
-                                <p className="font-black text-xl tracking-tighter" style={{ fontFamily: style.fonts.heading }}>{stat.value}</p>
-                                <p className="text-[9px] font-black uppercase tracking-widest opacity-40">{stat.label}</p>
+                                <p className="font-black text-xl tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>{stat.value}</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{stat.label}</p>
                             </div>
                         ))}
                     </div>
@@ -198,7 +202,7 @@ export function CommunicationPreview({ style, cardStyle, inputStyle, isMobile = 
                                 </div>
                                 <div>
                                     <p className="font-black text-[10px] uppercase tracking-widest" style={{ color: `hsl(${alert.color})` }}>{alert.title}</p>
-                                    <p className="text-xs font-medium opacity-70 mt-0.5 leading-relaxed">{alert.message}</p>
+                                    <p className="text-xs font-medium mt-0.5 leading-relaxed" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{alert.message}</p>
                                 </div>
                             </div>
                         ))}

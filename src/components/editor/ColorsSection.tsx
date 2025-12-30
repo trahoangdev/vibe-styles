@@ -1,5 +1,5 @@
 
-import { Palette, ChevronDown, ChevronUp, Copy, Check, Pipette, Lock, Unlock } from 'lucide-react';
+import { Palette, ChevronDown, ChevronUp, Copy, Check, Pipette, Lock, Unlock, RotateCcw } from 'lucide-react';
 import { ThemeOverrides } from '@/lib/designStyles';
 import { hslToHex } from '@/lib/colorUtils';
 import { useState, memo } from 'react';
@@ -67,6 +67,18 @@ export const ColorsSection = memo(function ColorsSection({
         setTimeout(() => setCopiedKey(null), 2000);
     };
 
+    // Preset color swatches
+    const presetSwatches = [
+        { name: 'Zinc', h: 240, s: 5, l: 26 },
+        { name: 'Slate', h: 215, s: 16, l: 47 },
+        { name: 'Blue', h: 217, s: 91, l: 60 },
+        { name: 'Violet', h: 263, s: 70, l: 50 },
+        { name: 'Rose', h: 350, s: 89, l: 60 },
+        { name: 'Orange', h: 25, s: 95, l: 53 },
+        { name: 'Green', h: 142, s: 71, l: 45 },
+        { name: 'Cyan', h: 189, s: 94, l: 43 },
+    ];
+
     const allColors = [
         { key: 'background', label: 'VOID (BG)' },
         { key: 'foreground', label: 'CONTENT (FG)' },
@@ -75,6 +87,13 @@ export const ColorsSection = memo(function ColorsSection({
         { key: 'surface', label: 'SURFACE' },
         { key: 'muted', label: 'MUTED' }
     ];
+
+    const hasChanges = Object.keys(overrides.colors || {}).length > 0;
+
+    const resetColors = () => {
+        const { colors, ...rest } = overrides;
+        onOverridesChange(rest);
+    };
 
     const filteredColors = allColors.filter(c =>
         searchQuery === '' ||
@@ -93,8 +112,29 @@ export const ColorsSection = memo(function ColorsSection({
                 <div className="flex items-center gap-3">
                     <Palette className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     <span className="text-xs font-black uppercase tracking-widest">Chromatic Array</span>
+                    {hasChanges && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    )}
                 </div>
-                {isOpen ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
+                <div className="flex items-center gap-2">
+                    {hasChanges && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        resetColors();
+                                    }}
+                                    className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <RotateCcw className="w-3 h-3" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Reset all colors</TooltipContent>
+                        </Tooltip>
+                    )}
+                    {isOpen ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
+                </div>
             </button>
 
             {isOpen && (
@@ -148,6 +188,28 @@ export const ColorsSection = memo(function ColorsSection({
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-3" align="start">
                                             <HslColorPicker color={hslObj} onChange={(newVal) => updateColor(colorKey, newVal)} />
+                                            
+                                            {/* Preset Swatches */}
+                                            <div className="mt-3 pt-3 border-t border-border/50">
+                                                <div className="text-[9px] uppercase font-bold opacity-40 mb-2">Quick Pick</div>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {presetSwatches.map((swatch) => (
+                                                        <Tooltip key={swatch.name}>
+                                                            <TooltipTrigger asChild>
+                                                                <button
+                                                                    onClick={() => updateColor(colorKey, { h: swatch.h, s: swatch.s, l: swatch.l })}
+                                                                    className="w-6 h-6 rounded-md border border-border/50 hover:scale-110 transition-transform active:scale-95"
+                                                                    style={{ backgroundColor: `hsl(${swatch.h}, ${swatch.s}%, ${swatch.l}%)` }}
+                                                                />
+                                                            </TooltipTrigger>
+                                                            <TooltipContent side="bottom">
+                                                                <p>{swatch.name}</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
                                             <div className="mt-3 flex gap-2">
                                                 <div className="text-[10px] uppercase font-bold opacity-50">HSL</div>
                                                 <input

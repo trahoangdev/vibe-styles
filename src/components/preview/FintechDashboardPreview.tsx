@@ -113,8 +113,8 @@ export function FintechDashboardPreview({ style, isMobile = false }: FintechDash
                                 {stat.change.startsWith('+') ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                             </span>
                         </div>
-                        <h3 className="text-sm opacity-60 font-medium uppercase tracking-wider mb-1">{stat.title}</h3>
-                        <p className={`text-2xl font-black ${isNeoBrutalism ? 'font-mono' : ''}`}>{stat.value}</p>
+                        <h3 className="text-sm font-medium uppercase tracking-wider mb-1" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{stat.title}</h3>
+                        <p className={`text-2xl font-black ${isNeoBrutalism ? 'font-mono' : ''}`} style={{ color: `hsl(${style.colors.foreground})` }}>{stat.value}</p>
 
                         {/* Decorative background blob for Neo-Brutalism */}
                         {isNeoBrutalism && (
@@ -194,7 +194,7 @@ export function FintechDashboardPreview({ style, isMobile = false }: FintechDash
                     whileInView={{ opacity: 1, x: 0 }}
                     className={`${cardClass} col-span-1 p-6`}
                 >
-                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2" style={{ color: `hsl(${style.colors.foreground})` }}>
                         <CreditCard className="w-5 h-5" />
                         Recent
                     </h3>
@@ -202,15 +202,15 @@ export function FintechDashboardPreview({ style, isMobile = false }: FintechDash
                         {transactions.map((tx, i) => (
                             <div key={tx.id} className={`flex justify-between items-center p-3 ${isNeoBrutalism ? 'border-b-2 border-black last:border-0 hover:bg-yellow-100 transition-colors cursor-pointer' : 'border-b border-border/50 last:border-0 hover:bg-muted/50 rounded-lg transition-colors'}`}>
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isNeoBrutalism ? 'bg-white border-2 border-black' : 'bg-muted text-muted-foreground'}`}>
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isNeoBrutalism ? 'bg-white border-2 border-black' : ''}`} style={{ backgroundColor: isNeoBrutalism ? undefined : `hsl(${style.colors.muted})`, color: `hsl(${style.colors.mutedForeground})` }}>
                                         {tx.type === 'income' ? <DollarSign className="w-5 h-5" /> : <CreditCard className="w-5 h-5" />}
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm truncate max-w-[120px]">{tx.name}</p>
-                                        <p className="text-xs opacity-60">{tx.date}</p>
+                                        <p className="font-bold text-sm truncate max-w-[120px]" style={{ color: `hsl(${style.colors.foreground})` }}>{tx.name}</p>
+                                        <p className="text-xs" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{tx.date}</p>
                                     </div>
                                 </div>
-                                <div className={`font-bold text-sm ${tx.type === 'income' ? 'text-green-600' : ''}`}>
+                                <div className={`font-bold text-sm ${tx.type === 'income' ? 'text-green-600' : ''}`} style={{ color: tx.type === 'income' ? undefined : `hsl(${style.colors.foreground})` }}>
                                     {tx.amount > 0 ? '+' : ''}{tx.amount.toFixed(2)}
                                 </div>
                             </div>

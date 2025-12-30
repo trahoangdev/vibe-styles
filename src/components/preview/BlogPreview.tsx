@@ -43,13 +43,13 @@ export function BlogPreview({ style, cardStyle, isMobile = false }: BlogPreviewP
                     </div>
 
                     <article className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-p:leading-relaxed prose-p:opacity-90" style={{ color: `hsl(${style.colors.foreground})` }}>
-                        <p className="mb-6">
-                            In the rapidly evolving landscape of frontend development, the distinction between "design" and "engineering" is becoming increasingly blurred. We are moving towards a unified <strong>Design Protocol</strong> where tokens are the single source of truth.
+                        <p className="mb-6" style={{ color: `hsl(${style.colors.foreground})` }}>
+                            In the rapidly evolving landscape of frontend development, the distinction between "design" and "engineering" is becoming increasingly blurred. We are moving towards a unified <strong style={{ color: `hsl(${style.colors.foreground})` }}>Design Protocol</strong> where tokens are the single source of truth.
                         </p>
 
-                        <h3 className="text-2xl font-bold mt-10 mb-4" style={{ fontFamily: style.fonts.heading }}>The Atomic Shift</h3>
-                        <p className="mb-6">
-                            Traditional design handoffs are lossy. By adopting a system where <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono border border-border">designStyles.ts</code> drives both the Figma preview and the production React components, we eliminate the translation layer entirely.
+                        <h3 className="text-2xl font-bold mt-10 mb-4" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>The Atomic Shift</h3>
+                        <p className="mb-6" style={{ color: `hsl(${style.colors.foreground})` }}>
+                            Traditional design handoffs are lossy. By adopting a system where <code className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ backgroundColor: `hsl(${style.colors.muted})`, color: `hsl(${style.colors.foreground})`, border: `1px solid hsl(${style.colors.border})` }}>designStyles.ts</code> drives both the Figma preview and the production React components, we eliminate the translation layer entirely.
                         </p>
 
                         <blockquote
@@ -62,11 +62,11 @@ export function BlogPreview({ style, cardStyle, isMobile = false }: BlogPreviewP
                             "The interface is no longer a static canvas, but a function of state."
                         </blockquote>
 
-                        <h3 className="text-2xl font-bold mt-10 mb-4" style={{ fontFamily: style.fonts.heading }}>Implementation Stats</h3>
-                        <ul className="list-disc pl-6 space-y-2 mb-8 opacity-80">
-                            <li><strong>40% Reduction</strong> in design debt</li>
-                            <li><strong>Zero</strong> latency in style updates</li>
-                            <li><strong>100%</strong> consistency across deployment nodes</li>
+                        <h3 className="text-2xl font-bold mt-10 mb-4" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>Implementation Stats</h3>
+                        <ul className="list-disc pl-6 space-y-2 mb-8" style={{ color: `hsl(${style.colors.foreground})` }}>
+                            <li><strong style={{ color: `hsl(${style.colors.foreground})` }}>40% Reduction</strong> in design debt</li>
+                            <li><strong style={{ color: `hsl(${style.colors.foreground})` }}>Zero</strong> latency in style updates</li>
+                            <li><strong style={{ color: `hsl(${style.colors.foreground})` }}>100%</strong> consistency across deployment nodes</li>
                         </ul>
                     </article>
 

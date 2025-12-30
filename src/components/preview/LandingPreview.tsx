@@ -19,9 +19,9 @@ export function LandingPreview({ style, cardStyle, buttonStyle, isMobile = false
                     className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 border border-border mb-6"
                 >
                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ backgroundColor: `hsl(${style.colors.primary})` }} />
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">System Ready for Launch</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>System Ready for Launch</span>
                 </div>
-                <h2 className="text-4xl lg:text-5xl font-black tracking-tighter mb-6" style={{ fontFamily: style.fonts.heading }}>
+                <h2 className="text-4xl lg:text-5xl font-black tracking-tighter mb-6" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                     Deploy at the <span style={{ color: `hsl(${style.colors.primary})` }}>Speed of Sound.</span>
                 </h2>
                 <p className="max-w-2xl mx-auto text-lg opacity-60" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
@@ -65,9 +65,9 @@ export function LandingPreview({ style, cardStyle, buttonStyle, isMobile = false
                         >
                             <feature.icon className="w-6 h-6" />
                         </div>
-                        <h4 className="text-lg font-black tracking-tight mb-3 uppercase">{feature.title}</h4>
-                        <p className="text-sm opacity-60 leading-relaxed mb-6">{feature.desc}</p>
-                        <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:gap-3 transition-all">
+                <h4 className="text-lg font-black tracking-tight mb-3 uppercase" style={{ color: `hsl(${style.colors.foreground})` }}>{feature.title}</h4>
+                        <p className="text-sm leading-relaxed mb-6" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{feature.desc}</p>
+                        <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:gap-3 transition-all" style={{ color: `hsl(${style.colors.primary})` }}>
                             Initialize <ArrowRight className="w-3 h-3" />
                         </button>
                     </div>
@@ -82,7 +82,7 @@ export function LandingPreview({ style, cardStyle, buttonStyle, isMobile = false
                     { icon: Zap, label: 'Vercel' },
                     { icon: BarChart3, label: 'Stripe' },
                 ].map((logo, i) => (
-                    <div key={i} className="flex items-center gap-2 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all cursor-crosshair">
+                    <div key={i} className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all cursor-crosshair" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                         <logo.icon className="w-5 h-5" />
                         <span className="font-black text-sm uppercase tracking-tighter">{logo.label}</span>
                     </div>

@@ -6,57 +6,57 @@
 
 @layer base {
   :root {
-    /* App Shell - Neutral base */
-    --background: 0 0% 98%;
-    --foreground: 220 14% 10%;
+    /* App Shell - Zinc/Black base */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 14% 10%;
+    --card-foreground: 240 10% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 14% 10%;
+    --popover-foreground: 240 10% 4%;
 
-    --primary: 220 14% 10%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 240 6% 10%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 14% 10%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
 
-    --accent: 220 14% 94%;
-    --accent-foreground: 220 14% 10%;
+    --accent: 240 5% 94%;
+    --accent-foreground: 240 6% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 220 14% 10%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 240 6% 10%;
 
     --radius: 0.625rem;
 
-    /* Sidebar */
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 14% 10%;
-    --sidebar-primary: 220 14% 10%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 220 14% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 220 90% 56%;
+    /* Sidebar - Zinc */
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 6% 10%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 240 5% 65%;
 
     /* Style-specific tokens (dynamically overridden) */
-    --style-primary: 220 14% 10%;
+    --style-primary: 240 6% 10%;
     --style-primary-foreground: 0 0% 100%;
-    --style-accent: 217 91% 60%;
+    --style-accent: 240 5% 26%;
     --style-accent-foreground: 0 0% 100%;
     --style-surface: 0 0% 100%;
-    --style-surface-foreground: 220 14% 10%;
-    --style-muted: 220 14% 96%;
-    --style-muted-foreground: 220 10% 46%;
-    --style-border: 220 13% 91%;
+    --style-surface-foreground: 240 6% 10%;
+    --style-muted: 240 5% 96%;
+    --style-muted-foreground: 240 4% 46%;
+    --style-border: 240 6% 90%;
     --style-success: 142 71% 45%;
     --style-warning: 38 92% 50%;
     --style-error: 0 84% 60%;
@@ -64,43 +64,43 @@
   }
 
   .dark {
-    /* Deep Slate / Blue-Gray foundation */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    /* Pure Black / Zinc Dark foundation */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 6% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 6% 10%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47.4% 11.2%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 6% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 240 5% 65%;
 
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 10% 4%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 6% 10%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 240 5% 65%;
   }
 }
 
@@ -114,6 +114,12 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
+  /* Custom selection color */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.2);
+    color: hsl(var(--foreground));
+  }
+
   /* Font families */
   .font-display {
     font-family: 'Playfair Display', Georgia, serif;
@@ -125,6 +131,21 @@
 }
 
 @layer utilities {
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Button press animation */
+  .press-effect {
+    @apply transition-transform active:scale-95;
+  }
+
+  /* Card hover lift */
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
+  }
 
   /* Custom scrollbar */
   .scrollbar-thin::-webkit-scrollbar {
@@ -143,6 +164,30 @@
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
     cursor: pointer;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area for mobile bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Mobile bottom nav spacing */
+  .pb-mobile-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
   }
 
   /* Glass effect 2.0 */
@@ -189,5 +234,119 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Custom cursors for interactive elements */
+  .cursor-grab {
+    cursor: grab;
+  }
+
+  .cursor-grab:active {
+    cursor: grabbing;
+  }
+
+  .cursor-pointer-custom {
+    cursor: pointer;
+  }
+
+  .cursor-zoom-in {
+    cursor: zoom-in;
+  }
+
+  .cursor-zoom-out {
+    cursor: zoom-out;
+  }
+
+  /* Draggable item styles */
+  .draggable {
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .draggable:active,
+  .draggable.dragging {
+    cursor: grabbing;
+  }
+
+  .draggable.dragging {
+    opacity: 0.8;
+    z-index: 50;
+  }
+}
+
+/* Print styles */
+@media print {
+  /* Hide non-essential elements */
+  .no-print,
+  nav,
+  footer,
+  .sidebar,
+  button,
+  .mobile-nav,
+  .fab,
+  .toast,
+  .modal,
+  .drawer {
+    display: none !important;
+  }
+
+  /* Reset backgrounds for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Ensure content is visible */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Typography for print */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Links */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  a[href^="#"]::after,
+  a[href^="javascript:"]::after {
+    content: "";
+  }
+
+  /* Code blocks */
+  pre, code {
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+
+  /* Images */
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
   }
 }

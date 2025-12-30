@@ -1,16 +1,21 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { StyleSidebar, StyleSidebarRef } from '@/components/StyleSidebar';
 import { StylePreview } from '@/components/preview/StylePreview';
 import { ThemeEditor } from '@/components/editor/ThemeEditor';
 import { KeyboardShortcutsPanel } from '@/components/KeyboardShortcutsPanel';
 import { OnboardingTour } from '@/components/OnboardingTour';
 import { CommandPalette } from '@/components/CommandPalette';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { designStyles } from '@/lib/designStyles';
 import { toast } from '@/hooks/use-toast';
 import { getFullExportCode } from '@/lib/designStyles';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useTheme } from '@/hooks/use-theme';
 import { useThemeStore } from '@/store/themeStore';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
+import { useSwipe } from '@/hooks/use-swipe';
+import { usePullToRefresh } from '@/hooks/use-pull-to-refresh';
+import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -42,14 +47,28 @@ const Index = () => {
 
   const currentStyleIndex = designStyles.findIndex(s => s.id === selectedStyle.id);
 
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    return Object.keys(themeOverrides.colors || {}).length > 0 ||
+      Object.keys(themeOverrides.fonts || {}).length > 0 ||
+      themeOverrides.radius !== undefined ||
+      themeOverrides.shadowStrength !== undefined ||
+      themeOverrides.borderWidth !== undefined ||
+      themeOverrides.density !== undefined;
+  }, [themeOverrides]);
+
+  // Warn before leaving with unsaved changes
+  useUnsavedChanges(hasUnsavedChanges, 'You have unsaved theme customizations. Are you sure you want to leave?');
+
   const handleCopyStyle = async () => {
     const code = getFullExportCode(selectedStyle);
 
     try {
       await navigator.clipboard.writeText(code);
       toast({
-        title: "Copied to clipboard!",
+        title: "✨ Copied to clipboard!",
         description: `${selectedStyle.name} design system is ready to paste.`,
+        className: "bg-green-500/10 border-green-500/20",
       });
     } catch (err) {
       const textArea = document.createElement('textarea');
@@ -60,8 +79,9 @@ const Index = () => {
       document.body.removeChild(textArea);
 
       toast({
-        title: "Copied to clipboard!",
+        title: "✨ Copied to clipboard!",
         description: `${selectedStyle.name} design system is ready to paste.`,
+        className: "bg-green-500/10 border-green-500/20",
       });
     }
   };
@@ -69,12 +89,17 @@ const Index = () => {
   const handleSelectStyle = (style: typeof selectedStyle) => {
     store.setSelectedStyle(style);
     store.setMobileMenuOpen(false);
+    toast({
+      title: `🎨 ${style.name}`,
+      description: "Style applied successfully",
+      duration: 1500,
+    });
   };
 
   const handleResetOverrides = () => {
     store.resetOverrides();
     toast({
-      title: "Theme reset",
+      title: "🔄 Theme reset",
       description: "All customizations have been cleared.",
     });
   };
@@ -82,10 +107,20 @@ const Index = () => {
   const handleRandomize = () => {
     store.randomizeTheme();
     toast({
-      title: "Feeling Lucky!",
+      title: "🎲 Feeling Lucky!",
       description: "Generated a new random theme based on color theory.",
     });
   };
+
+  const handleRefresh = useCallback(async () => {
+    // Simulate refresh - reset to current style defaults
+    store.resetOverrides();
+    toast({
+      title: "🔄 Refreshed",
+      description: "Theme reset to defaults.",
+      duration: 1500,
+    });
+  }, [store]);
 
   const navigateStyle = useCallback((direction: 'prev' | 'next') => {
     const newIndex = direction === 'prev'
@@ -94,6 +129,18 @@ const Index = () => {
     handleSelectStyle(designStyles[newIndex]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStyleIndex]);
+
+  // Swipe gestures for mobile - swipe left/right to change styles
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: () => isMobile && navigateStyle('next'),
+    onSwipeRight: () => isMobile && navigateStyle('prev'),
+  }, 80);
+
+  // Pull to refresh for mobile
+  const { isPulling, isRefreshing, pullDistance, handlers: pullHandlers } = usePullToRefresh({
+    onRefresh: handleRefresh,
+    threshold: 80,
+  });
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -156,7 +203,25 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background">
+    <div className={cn("flex h-screen w-full overflow-hidden bg-background", isMobile && "pb-mobile-nav")}>
+      {/* Pull to Refresh Indicator */}
+      {isMobile && (isPulling || isRefreshing) && (
+        <div 
+          className="fixed top-14 left-0 right-0 z-50 flex justify-center pointer-events-none"
+          style={{ transform: `translateY(${Math.min(pullDistance, 60)}px)` }}
+        >
+          <div className={cn(
+            "w-10 h-10 rounded-full bg-card border border-border shadow-lg flex items-center justify-center transition-transform",
+            isRefreshing && "animate-spin"
+          )}>
+            <svg className="w-5 h-5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+            </svg>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -214,10 +279,13 @@ const Index = () => {
       </div>
 
       {/* Main Content */}
-      <div className={cn(
-        'flex-1 flex relative transition-all duration-300',
-        'md:pt-0 pt-14' // Account for mobile header
-      )}>
+      <div 
+        className={cn(
+          'flex-1 flex relative transition-all duration-300',
+          'md:pt-0 pt-14' // Account for mobile header
+        )}
+        {...(isMobile ? { ...swipeHandlers, ...pullHandlers } : {})}
+      >
         <StylePreview
           style={effectiveStyle}
           isFullScreen={isFullScreen}
@@ -286,7 +354,31 @@ const Index = () => {
         onCopyStyle={handleCopyStyle}
         onUndo={() => store.undoOverrides()}
         onRedo={() => store.redoOverrides()}
+        onShowShortcuts={() => store.setShowShortcuts(true)}
       />
+
+      {/* Floating Action Button - Mobile */}
+      {isMobile && !isFullScreen && !showEditor && (
+        <FloatingActionButton
+          onOpenEditor={() => store.setShowEditor(true)}
+          onCopyStyle={handleCopyStyle}
+          onRandomize={handleRandomize}
+        />
+      )}
+
+      {/* Mobile Bottom Navigation */}
+      {isMobile && !isFullScreen && (
+        <MobileBottomNav
+          onOpenStyles={() => store.toggleMobileMenu()}
+          onOpenEditor={() => store.setShowEditor(true)}
+          onOpenFavorites={() => {
+            store.setMobileMenuOpen(true);
+            // Will need to trigger favorites tab in sidebar
+          }}
+          onOpenCommand={() => store.setShowCommandPalette(true)}
+          isEditorOpen={showEditor}
+        />
+      )}
     </div>
   );
 };

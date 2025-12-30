@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
     CommandDialog,
     CommandInput,
@@ -7,23 +7,25 @@ import {
     CommandGroup,
     CommandItem,
     CommandShortcut,
+    CommandSeparator,
 } from "@/components/ui/command";
 import {
     LayoutTemplate,
-    Palette,
-    Monitor,
-    Smartphone,
-    Tablet,
     Maximize2,
     Sliders,
-    Rocket,
     Moon,
     Sun,
     RotateCcw,
-    RotateCw
+    RotateCw,
+    Copy,
+    Download,
+    Shuffle,
+    Keyboard,
+    HelpCircle,
 } from "lucide-react";
 import { DesignStyle, designStyles } from "@/lib/designStyles";
 import { useTheme } from "@/hooks/use-theme";
+import { useThemeStore } from "@/store/themeStore";
 
 interface CommandPaletteProps {
     open: boolean;
@@ -35,6 +37,7 @@ interface CommandPaletteProps {
     onCopyStyle: () => void;
     onUndo: () => void;
     onRedo: () => void;
+    onShowShortcuts?: () => void;
 }
 
 export function CommandPalette({
@@ -46,9 +49,11 @@ export function CommandPalette({
     onToggleEditor,
     onCopyStyle,
     onUndo,
-    onRedo
+    onRedo,
+    onShowShortcuts
 }: CommandPaletteProps) {
     const { theme, toggleTheme } = useTheme();
+    const store = useThemeStore();
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -103,7 +108,16 @@ export function CommandPalette({
                         <span>Toggle {theme === 'dark' ? 'Light' : 'Dark'} Mode</span>
                         <CommandShortcut>D</CommandShortcut>
                     </CommandItem>
+                    {onShowShortcuts && (
+                        <CommandItem onSelect={() => runCommand(onShowShortcuts)}>
+                            <Keyboard className="mr-2 h-4 w-4" />
+                            <span>Show Keyboard Shortcuts</span>
+                            <CommandShortcut>?</CommandShortcut>
+                        </CommandItem>
+                    )}
                 </CommandGroup>
+
+                <CommandSeparator />
 
                 <CommandGroup heading="Editing">
                     <CommandItem onSelect={() => runCommand(onUndo)}>
@@ -116,12 +130,29 @@ export function CommandPalette({
                         <span>Redo Change</span>
                         <CommandShortcut>⌘Y</CommandShortcut>
                     </CommandItem>
+                    <CommandItem onSelect={() => runCommand(() => store.randomizeTheme())}>
+                        <Shuffle className="mr-2 h-4 w-4" />
+                        <span>Randomize Theme</span>
+                    </CommandItem>
+                    <CommandItem onSelect={() => runCommand(() => store.resetOverrides())}>
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        <span>Reset All Changes</span>
+                    </CommandItem>
                 </CommandGroup>
 
-                <CommandGroup heading="System">
+                <CommandSeparator />
+
+                <CommandGroup heading="Export">
                     <CommandItem onSelect={() => runCommand(onCopyStyle)}>
-                        <Rocket className="mr-2 h-4 w-4" />
-                        <span>Copy Complete Design System Code</span>
+                        <Copy className="mr-2 h-4 w-4" />
+                        <span>Copy Design System Code</span>
+                    </CommandItem>
+                    <CommandItem onSelect={() => runCommand(() => {
+                        onCopyStyle();
+                        // Could add more export options here
+                    })}>
+                        <Download className="mr-2 h-4 w-4" />
+                        <span>Export Theme</span>
                     </CommandItem>
                 </CommandGroup>
             </CommandList>

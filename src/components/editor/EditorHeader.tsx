@@ -1,8 +1,9 @@
-import { RotateCcw, Undo2, Redo2, Dices, Search, PanelRight, AppWindow, History } from 'lucide-react';
+import { RotateCcw, Undo2, Redo2, Dices, Search, PanelRight, AppWindow, History, Circle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HistoryPanel } from './HistoryPanel';
 import { HarmonyStrategy } from '@/lib/themeGenerator';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface EditorHeaderProps {
     hasChanges: boolean;
@@ -27,7 +28,6 @@ export function EditorHeader({
     onUndo,
     onRedo,
     onRandomize,
-    onGenerate,
     historyInfo,
     onSearch,
     editorMode,
@@ -37,11 +37,30 @@ export function EditorHeader({
     return (
         <div className="p-6 border-b border-border bg-muted/20">
             <div className="flex items-center justify-between mb-4">
-                <div>
-                    <h3 className="font-black text-xs uppercase tracking-[0.2em]">Engine Config</h3>
-                    <p className="text-[10px] uppercase font-bold opacity-40">Verifying aesthetic output</p>
+                <div className="flex items-center gap-3">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h3 className="font-black text-xs uppercase tracking-[0.2em]">Theme Editor</h3>
+                            <AnimatePresence>
+                                {hasChanges && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20"
+                                    >
+                                        <Circle className="w-2 h-2 fill-amber-500 text-amber-500" />
+                                        <span className="text-[9px] font-bold uppercase text-amber-600 dark:text-amber-400">Unsaved</span>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                        <p className="text-[10px] uppercase font-bold opacity-40">
+                            {hasChanges ? 'Changes will auto-save' : 'All changes saved'}
+                        </p>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <button
@@ -84,40 +103,58 @@ export function EditorHeader({
                         </TooltipContent>
                     </Tooltip>
 
-                    {hasChanges && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <button
-                                    onClick={onReset}
-                                    className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-all active:scale-95"
-                                >
-                                    <RotateCcw className="w-4 h-4" />
-                                </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Wipe overrides</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    )}
+                    <AnimatePresence>
+                        {hasChanges && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                            >
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button
+                                            onClick={onReset}
+                                            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-all active:scale-95"
+                                        >
+                                            <RotateCcw className="w-4 h-4" />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Reset all changes</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
 
             <div className="flex items-center justify-between">
                 <div className="flex gap-1">
-                    <button
-                        onClick={onUndo}
-                        disabled={!canUndo}
-                        className="p-2 rounded-xl bg-muted/50 border border-border disabled:opacity-20 transition-all hover:bg-muted active:scale-90"
-                    >
-                        <Undo2 className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={onRedo}
-                        disabled={!canRedo}
-                        className="p-2 rounded-xl bg-muted/50 border border-border disabled:opacity-20 transition-all hover:bg-muted active:scale-90"
-                    >
-                        <Redo2 className="w-4 h-4" />
-                    </button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                onClick={onUndo}
+                                disabled={!canUndo}
+                                className="p-2 rounded-xl bg-muted/50 border border-border disabled:opacity-20 transition-all hover:bg-muted active:scale-90"
+                            >
+                                <Undo2 className="w-4 h-4" />
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Undo (⌘Z)</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                onClick={onRedo}
+                                disabled={!canRedo}
+                                className="p-2 rounded-xl bg-muted/50 border border-border disabled:opacity-20 transition-all hover:bg-muted active:scale-90"
+                            >
+                                <Redo2 className="w-4 h-4" />
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Redo (⌘Y)</TooltipContent>
+                    </Tooltip>
                 </div>
                 {historyInfo && (
                     <div className="px-3 py-1 bg-foreground text-background text-[9px] font-black uppercase rounded-full">

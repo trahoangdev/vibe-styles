@@ -28,25 +28,25 @@ export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = fal
                 </h4>
                 <div className="space-y-6">
                     <div>
-                        <h1 className="text-4xl font-black tracking-tighter" style={{ fontFamily: style.fonts.heading }}>
+                        <h1 className="text-4xl font-black tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                             H1 / BLACK
                         </h1>
-                        <p className="text-[10px] mt-1 font-mono uppercase opacity-40" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
+                        <p className="text-[10px] mt-1 font-mono uppercase" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                             {style.fonts.heading.split(',')[0]} / Bold
                         </p>
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: style.fonts.heading }}>
+                        <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                             H2 / Semibold
                         </h2>
                     </div>
                     <div>
-                        <h3 className="text-lg font-medium tracking-normal" style={{ fontFamily: style.fonts.heading }}>
+                        <h3 className="text-lg font-medium tracking-normal" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                             H3 / Medium
                         </h3>
                     </div>
                     <div>
-                        <p className="text-sm leading-relaxed opacity-80" style={{ fontFamily: style.fonts.body }}>
+                        <p className="text-sm leading-relaxed" style={{ fontFamily: style.fonts.body, color: `hsl(${style.colors.mutedForeground})` }}>
                             Body text uses {style.fonts.body.split(',')[0]}. It is optimized for long-form readability and balanced whitespace.
                         </p>
                     </div>
@@ -80,11 +80,11 @@ export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = fal
                                 }}
                             />
                             <div className="flex-1">
-                                <p className="font-black text-xs uppercase tracking-tight">{item.name}</p>
-                                <p className="text-[10px] uppercase tracking-widest opacity-40 font-mono">
+                                <p className="font-black text-xs uppercase tracking-tight" style={{ color: `hsl(${style.colors.foreground})` }}>{item.name}</p>
+                                <p className="text-[10px] uppercase tracking-widest font-mono" style={{ color: `hsl(${style.colors.mutedForeground})` }}>
                                     {item.color}
                                 </p>
-                                <p className="text-[9px] font-bold text-accent uppercase tracking-tighter" style={{ color: `hsl(${style.colors.accent})` }}>
+                                <p className="text-[9px] font-bold uppercase tracking-tighter" style={{ color: `hsl(${style.colors.accent})` }}>
                                     {item.desc}
                                 </p>
                             </div>
@@ -107,7 +107,7 @@ export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = fal
                 <div className="space-y-6">
                     {/* Toggle */}
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Switch Controller</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Switch Controller</span>
                         <button
                             onClick={() => setToggleOn(!toggleOn)}
                             className="relative w-12 h-6 rounded-full transition-all duration-300"
@@ -137,7 +137,7 @@ export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = fal
                                         <div className="w-2 h-2 rounded-full bg-primary" style={{ backgroundColor: `hsl(${style.colors.primary})` }} />
                                     )}
                                 </div>
-                                <span className={selectedOption === opt ? 'opacity-100' : 'opacity-40'}>MODE {opt.toUpperCase()}</span>
+                                <span style={{ color: selectedOption === opt ? `hsl(${style.colors.foreground})` : `hsl(${style.colors.mutedForeground})` }}>MODE {opt.toUpperCase()}</span>
                             </label>
                         ))}
                     </div>
@@ -147,12 +147,13 @@ export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = fal
                         {[Bell, Settings, Share2].map((Icon, i) => (
                             <button
                                 key={i}
-                                className={`p-3 transition-all duration-300 hover:scale-110 hover:bg-primary/10 border border-transparent hover:border-primary/20 bg-muted/20`}
+                                className={`p-3 transition-all duration-300 hover:scale-110 border border-transparent`}
                                 style={{
                                     borderRadius: style.radius,
+                                    backgroundColor: `hsl(${style.colors.muted} / 0.2)`,
                                 }}
                             >
-                                <Icon className="w-4 h-4 opacity-70 group-hover:opacity-100" />
+                                <Icon className="w-4 h-4" style={{ color: `hsl(${style.colors.foreground})` }} />
                             </button>
                         ))}
                     </div>
@@ -160,11 +161,12 @@ export function DesignSystemSpecs({ style, cardStyle, inputStyle, isMobile = fal
                     {/* Progress */}
                     <div>
                         <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest mb-2">
-                            <span className="opacity-60">System Load</span>
+                            <span style={{ color: `hsl(${style.colors.mutedForeground})` }}>System Load</span>
                             <span style={{ color: `hsl(${style.colors.primary})` }}>75%</span>
                         </div>
                         <div
-                            className="h-1.5 rounded-full overflow-hidden bg-muted/20"
+                            className="h-1.5 rounded-full overflow-hidden"
+                            style={{ backgroundColor: `hsl(${style.colors.muted} / 0.2)` }}
                         >
                             <div
                                 className="h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--style-primary),0.5)]"

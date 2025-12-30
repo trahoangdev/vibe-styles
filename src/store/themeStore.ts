@@ -13,6 +13,9 @@ interface ThemeState {
     historyIndex: number;
     snapshots: ThemeOverrides[]; // Saved states
 
+    // Favorites
+    favoriteStyleIds: string[];
+
     // UI State
     isFullScreen: boolean;
     showEditor: boolean;
@@ -24,6 +27,14 @@ interface ThemeState {
 
     colorBlindnessMode: ColorBlindnessMode;
     isMobile: boolean;
+
+    // View & Zoom
+    previewZoom: number;
+    sidebarViewMode: 'list' | 'grid';
+    
+    // Compare
+    showCompare: boolean;
+    compareStyle: DesignStyle | null;
 
     // State
     lockedColors: string[];
@@ -42,6 +53,11 @@ interface ThemeState {
     restoreSnapshot: (index: number) => void;
     jumpToHistory: (index: number) => void;
 
+    // Favorites
+    toggleFavorite: (styleId: string) => void;
+    isFavorite: (styleId: string) => boolean;
+    reorderFavorites: (newOrder: string[]) => void;
+
     toggleFullScreen: () => void;
     toggleEditor: () => void;
     setShowEditor: (show: boolean) => void;
@@ -56,6 +72,17 @@ interface ThemeState {
 
     setColorBlindnessMode: (mode: ColorBlindnessMode) => void;
     setIsMobile: (isMobile: boolean) => void;
+
+    // Zoom & View
+    setPreviewZoom: (zoom: number) => void;
+    zoomIn: () => void;
+    zoomOut: () => void;
+    resetZoom: () => void;
+    setSidebarViewMode: (mode: 'list' | 'grid') => void;
+    
+    // Compare
+    setShowCompare: (show: boolean) => void;
+    setCompareStyle: (style: DesignStyle | null) => void;
 }
 
 export const useThemeStore = create<ThemeState>()(
@@ -68,6 +95,7 @@ export const useThemeStore = create<ThemeState>()(
             historyIndex: 0,
             snapshots: [],
             lockedColors: [],
+            favoriteStyleIds: [],
 
             isFullScreen: false,
             showEditor: false,
@@ -79,6 +107,14 @@ export const useThemeStore = create<ThemeState>()(
 
             colorBlindnessMode: 'none',
             isMobile: false,
+
+            // Zoom & View
+            previewZoom: 100,
+            sidebarViewMode: 'list',
+            
+            // Compare
+            showCompare: false,
+            compareStyle: null,
 
             // Actions
             setSelectedStyle: (style) => set({
@@ -151,11 +187,9 @@ export const useThemeStore = create<ThemeState>()(
                     locked.forEach(key => {
                         const currentColorsOverride = currentOverrides.colors || {};
                         if (currentColorsOverride[key as keyof typeof currentColorsOverride]) {
-                            // @ts-ignore
-                            newColors[key] = currentColorsOverride[key as keyof typeof currentColorsOverride]
+                            (newColors as Record<string, string>)[key] = currentColorsOverride[key as keyof typeof currentColorsOverride] as string;
                         } else {
-                            // @ts-ignore
-                            delete newColors[key];
+                            delete (newColors as Record<string, string>)[key];
                         }
                     });
                     randomTheme.colors = newColors;
@@ -174,11 +208,9 @@ export const useThemeStore = create<ThemeState>()(
                     locked.forEach(key => {
                         const currentColorsOverride = currentOverrides.colors || {};
                         if (currentColorsOverride[key as keyof typeof currentColorsOverride]) {
-                            // @ts-ignore
-                            newColors[key] = currentColorsOverride[key as keyof typeof currentColorsOverride]
+                            (newColors as Record<string, string>)[key] = currentColorsOverride[key as keyof typeof currentColorsOverride] as string;
                         } else {
-                            // @ts-ignore
-                            delete newColors[key];
+                            delete (newColors as Record<string, string>)[key];
                         }
                     });
                     aiTheme.colors = newColors;
@@ -203,6 +235,15 @@ export const useThemeStore = create<ThemeState>()(
                 }
             },
 
+            // Favorites
+            toggleFavorite: (styleId) => set((state) => ({
+                favoriteStyleIds: state.favoriteStyleIds.includes(styleId)
+                    ? state.favoriteStyleIds.filter(id => id !== styleId)
+                    : [...state.favoriteStyleIds, styleId]
+            })),
+            isFavorite: (styleId) => get().favoriteStyleIds.includes(styleId),
+            reorderFavorites: (newOrder) => set({ favoriteStyleIds: newOrder }),
+
             toggleFullScreen: () => set((state) => ({ isFullScreen: !state.isFullScreen })),
             toggleEditor: () => set((state) => ({ showEditor: !state.showEditor })),
             setShowEditor: (show) => set({ showEditor: show }),
@@ -217,6 +258,17 @@ export const useThemeStore = create<ThemeState>()(
 
             setColorBlindnessMode: (mode) => set({ colorBlindnessMode: mode }),
             setIsMobile: (isMobile) => set({ isMobile }),
+
+            // Zoom & View
+            setPreviewZoom: (zoom) => set({ previewZoom: Math.min(150, Math.max(50, zoom)) }),
+            zoomIn: () => set((state) => ({ previewZoom: Math.min(150, state.previewZoom + 10) })),
+            zoomOut: () => set((state) => ({ previewZoom: Math.max(50, state.previewZoom - 10) })),
+            resetZoom: () => set({ previewZoom: 100 }),
+            setSidebarViewMode: (mode) => set({ sidebarViewMode: mode }),
+            
+            // Compare
+            setShowCompare: (show) => set({ showCompare: show }),
+            setCompareStyle: (style) => set({ compareStyle: style }),
         }),
         {
             name: 'vibestyle-storage', // unique name
@@ -228,8 +280,11 @@ export const useThemeStore = create<ThemeState>()(
                 history: state.history,
                 historyIndex: state.historyIndex,
                 snapshots: state.snapshots,
+                favoriteStyleIds: state.favoriteStyleIds,
                 isSidebarCollapsed: state.isSidebarCollapsed,
                 editorMode: state.editorMode,
+                sidebarViewMode: state.sidebarViewMode,
+                previewZoom: state.previewZoom,
                 // Do not persist UI toggles like isFullScreen, showEditor, etc. if not desired,  
                 // but persist history and selection is crucial.
             }),

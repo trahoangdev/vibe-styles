@@ -124,7 +124,20 @@ export default {
       boxShadow: {
         "soft": "0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 4px 16px -4px rgba(0, 0, 0, 0.08)",
         "medium": "0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.12)",
-        "hard": "4px 4px 0 0 currentColor",
+        "hard": "0 8px 32px -4px rgba(0, 0, 0, 0.16), 0 16px 48px -8px rgba(0, 0, 0, 0.2)",
+        "glow": "0 0 20px -5px var(--tw-shadow-color)",
+      },
+      // Standardized spacing
+      spacing: {
+        '4.5': '1.125rem', // 18px
+        '13': '3.25rem',   // 52px
+        '15': '3.75rem',   // 60px
+      },
+      // Standardized transitions
+      transitionDuration: {
+        'fast': '150ms',
+        'normal': '250ms',
+        'slow': '400ms',
       },
     },
   },

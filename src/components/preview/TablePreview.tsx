@@ -29,10 +29,10 @@ export function TablePreview({ style, cardStyle, isMobile = false }: TablePrevie
     return (
         <div className="mt-20 border-t border-border/30 pt-20 animate-fade-in">
             <div className="flex flex-col mb-8">
-                <h3 className="text-2xl font-black uppercase tracking-tighter" style={{ fontFamily: style.fonts.heading }}>
+                <h3 className="text-2xl font-black uppercase tracking-tighter" style={{ fontFamily: style.fonts.heading, color: `hsl(${style.colors.foreground})` }}>
                     System Logs
                 </h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Live Data Stream</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Live Data Stream</p>
             </div>
 
             <div
@@ -66,7 +66,7 @@ export function TablePreview({ style, cardStyle, isMobile = false }: TablePrevie
                 {/* Table Content */}
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-muted/30 border-b border-border/50 text-xs uppercase font-black tracking-wider opacity-60">
+                        <thead className="border-b text-xs uppercase font-black tracking-wider" style={{ backgroundColor: `hsl(${style.colors.muted} / 0.3)`, borderColor: `hsl(${style.colors.border} / 0.5)`, color: `hsl(${style.colors.mutedForeground})` }}>
                             <tr>
                                 <th className="p-4 w-12"><input type="checkbox" className="rounded border-border" /></th>
                                 <th className="p-4 cursor-pointer hover:bg-muted/50 transition-colors">Task ID <ArrowUpDown className="inline w-3 h-3 ml-1" /></th>
@@ -77,15 +77,15 @@ export function TablePreview({ style, cardStyle, isMobile = false }: TablePrevie
                                 <th className="p-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border/30">
+                        <tbody className="divide-y" style={{ borderColor: `hsl(${style.colors.border} / 0.3)` }}>
                             {data.map((row, i) => (
                                 <tr
                                     key={row.id}
                                     className="group hover:bg-muted/20 transition-colors"
                                 >
                                     <td className="p-4"><input type="checkbox" className="rounded border-border" /></td>
-                                    <td className="p-4 font-mono text-xs opacity-60">{row.id}</td>
-                                    <td className="p-4 font-medium">{row.title}</td>
+                                    <td className="p-4 font-mono text-xs" style={{ color: `hsl(${style.colors.mutedForeground})` }}>{row.id}</td>
+                                    <td className="p-4 font-medium" style={{ color: `hsl(${style.colors.foreground})` }}>{row.title}</td>
                                     <td className="p-4">
                                         <span
                                             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-transparent"
@@ -112,8 +112,8 @@ export function TablePreview({ style, cardStyle, isMobile = false }: TablePrevie
                                             {row.priority}
                                         </span>
                                     </td>
-                                    <td className="p-4 flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold">
+                                    <td className="p-4 flex items-center gap-2" style={{ color: `hsl(${style.colors.foreground})` }}>
+                                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: `hsl(${style.colors.muted})`, color: `hsl(${style.colors.foreground})` }}>
                                             {row.assignee.charAt(0)}
                                         </div>
                                         {row.assignee}
@@ -138,11 +138,11 @@ export function TablePreview({ style, cardStyle, isMobile = false }: TablePrevie
                 </div>
 
                 {/* Pagination Footer */}
-                <div className="p-4 border-t border-border/50 flex items-center justify-between text-xs opacity-60">
+                <div className="p-4 border-t flex items-center justify-between text-xs" style={{ borderColor: `hsl(${style.colors.border} / 0.5)`, color: `hsl(${style.colors.mutedForeground})` }}>
                     <span>Showing 1-5 of 24 tasks</span>
                     <div className="flex gap-2">
-                        <button className="px-3 py-1 bg-muted/50 rounded hover:bg-muted transition-colors disabled:opacity-50">Previous</button>
-                        <button className="px-3 py-1 bg-muted/50 rounded hover:bg-muted transition-colors">Next</button>
+                        <button className="px-3 py-1 rounded hover:bg-muted transition-colors disabled:opacity-50" style={{ backgroundColor: `hsl(${style.colors.muted} / 0.5)` }}>Previous</button>
+                        <button className="px-3 py-1 rounded hover:bg-muted transition-colors" style={{ backgroundColor: `hsl(${style.colors.muted} / 0.5)` }}>Next</button>
                     </div>
                 </div>
             </div>
