@@ -1,7 +1,7 @@
 import { designStyles, styleCategories, type DesignStyle, type StyleCategory } from '@/lib/designStyles';
 import { cn } from '@/lib/utils';
 import {
-  Copy, Check, Search, X, ChevronLeft, ChevronRight, Keyboard,
+  Copy, Check, Search, X, ChevronLeft, ChevronRight, Keyboard, Star,
   Feather, Minus, Square, Newspaper, Layers,
   Hexagon, User,
   type LucideIcon
@@ -21,6 +21,7 @@ import { useState, useMemo, useRef, forwardRef, useImperativeHandle } from 'reac
 import { EmptyState } from './EmptyState';
 import { ThemeToggle } from './ThemeToggle';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { useThemeStore } from '@/store/themeStore';
 
 // Union type for icons
 type IconType = LucideIcon | React.ComponentType<{ color?: string, size?: string | number, className?: string }>;
@@ -76,6 +77,7 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
   const [selectedCategory, setSelectedCategory] = useState<StyleCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const { favoriteStyleIds, toggleFavorite } = useThemeStore();
 
   useImperativeHandle(ref, () => ({
     focusSearch: () => {
@@ -92,7 +94,9 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
   const filteredStyles = useMemo(() => {
     let styles = selectedCategory === 'all'
       ? designStyles
-      : designStyles.filter(style => style.category.includes(selectedCategory));
+      : selectedCategory === 'favorites' as StyleCategory
+        ? designStyles.filter(style => favoriteStyleIds.includes(style.id))
+        : designStyles.filter(style => style.category.includes(selectedCategory));
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -103,18 +107,21 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
     }
 
     return styles;
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, searchQuery, favoriteStyleIds]);
 
   // Category counts
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: designStyles.length };
+    const counts: Record<string, number> = { 
+      all: designStyles.length,
+      favorites: favoriteStyleIds.length 
+    };
     styleCategories.forEach(cat => {
       if (cat.id !== 'all') {
         counts[cat.id] = designStyles.filter(s => s.category.includes(cat.id)).length;
       }
     });
     return counts;
-  }, []);
+  }, [favoriteStyleIds]);
 
   // Collapsed mini sidebar
   if (isCollapsed) {
@@ -233,6 +240,31 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
         {/* Category Tabs */}
         <div className="px-3 py-3 border-b border-border">
           <div className="flex flex-wrap gap-1.5">
+            {/* Favorites tab */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setSelectedCategory('favorites' as StyleCategory)}
+                  className={cn(
+                    'px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 flex items-center gap-1.5',
+                    selectedCategory === ('favorites' as StyleCategory)
+                      ? 'bg-amber-500 text-white shadow-soft'
+                      : 'bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
+                  )}
+                >
+                  <Star className="w-3 h-3" />
+                  <span className={cn(
+                    'text-[10px] px-1.5 py-0.5 rounded-full',
+                    selectedCategory === ('favorites' as StyleCategory)
+                      ? 'bg-white/20'
+                      : 'bg-foreground/10'
+                  )}>
+                    {categoryCounts.favorites}
+                  </span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Your favorite styles</TooltipContent>
+            </Tooltip>
             {styleCategories.map((cat) => (
               <Tooltip key={cat.id}>
                 <TooltipTrigger asChild>
@@ -266,52 +298,79 @@ export const StyleSidebar = forwardRef<StyleSidebarRef, StyleSidebarProps>(({
         <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-3">
           {filteredStyles.length === 0 ? (
             <EmptyState
-              title="No styles found"
-              description="Try a different search term or category"
+              title={selectedCategory === ('favorites' as StyleCategory) ? "No favorites yet" : "No styles found"}
+              description={selectedCategory === ('favorites' as StyleCategory) ? "Click the star icon to add favorites" : "Try a different search term or category"}
             />
           ) : (
             <div className="space-y-1">
               {filteredStyles.map((style, index) => (
-                <button
+                <div
                   key={style.id}
-                  onClick={() => onSelectStyle(style)}
-                  className={cn(
-                    'w-full text-left px-3 py-3 rounded-xl transition-all duration-200 group',
-                    'hover:scale-[1.02] active:scale-[0.98]',
-                    selectedStyle.id === style.id
-                      ? 'bg-foreground text-background shadow-medium'
-                      : 'hover:bg-muted'
-                  )}
+                  className="relative group"
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
-                  <div className="flex items-start gap-3">
-                    <StyleIcon
-                      iconName={style.icon}
+                  <button
+                    onClick={() => onSelectStyle(style)}
+                    className={cn(
+                      'w-full text-left px-3 py-3 rounded-xl transition-all duration-200',
+                      'hover:scale-[1.02] active:scale-[0.98]',
+                      selectedStyle.id === style.id
+                        ? 'bg-foreground text-background shadow-medium'
+                        : 'hover:bg-muted'
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <StyleIcon
+                        iconName={style.icon}
+                        className={cn(
+                          'w-5 h-5 mt-0.5 transition-transform duration-200 group-hover:scale-110',
+                          selectedStyle.id === style.id ? 'opacity-100' : 'opacity-60'
+                        )}
+                      />
+                      <div className="flex-1 min-w-0 pr-6">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-sm">{style.name}</span>
+                          {selectedStyle.id === style.id && (
+                            <span className="text-xs opacity-70 animate-fade-in">✓</span>
+                          )}
+                        </div>
+                        <p
+                          className={cn(
+                            'text-xs mt-1 line-clamp-2',
+                            selectedStyle.id === style.id
+                              ? 'text-background/70'
+                              : 'text-muted-foreground'
+                          )}
+                        >
+                          {style.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                  {/* Favorite button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(style.id);
+                    }}
+                    className={cn(
+                      'absolute right-3 top-3 p-1.5 rounded-lg transition-all duration-200',
+                      'opacity-0 group-hover:opacity-100',
+                      favoriteStyleIds.includes(style.id)
+                        ? 'opacity-100 text-amber-500 hover:text-amber-600'
+                        : selectedStyle.id === style.id
+                          ? 'text-background/50 hover:text-background'
+                          : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    <Star
                       className={cn(
-                        'w-5 h-5 mt-0.5 transition-transform duration-200 group-hover:scale-110',
-                        selectedStyle.id === style.id ? 'opacity-100' : 'opacity-60'
+                        'w-4 h-4 transition-transform hover:scale-110',
+                        favoriteStyleIds.includes(style.id) && 'fill-current'
                       )}
                     />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm">{style.name}</span>
-                        {selectedStyle.id === style.id && (
-                          <span className="text-xs opacity-70 animate-fade-in">✓</span>
-                        )}
-                      </div>
-                      <p
-                        className={cn(
-                          'text-xs mt-1 line-clamp-2',
-                          selectedStyle.id === style.id
-                            ? 'text-background/70'
-                            : 'text-muted-foreground'
-                        )}
-                      >
-                        {style.description}
-                      </p>
-                    </div>
-                  </div>
-                </button>
+                  </button>
+                </div>
               ))}
             </div>
           )}

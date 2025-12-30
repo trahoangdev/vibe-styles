@@ -13,6 +13,9 @@ interface ThemeState {
     historyIndex: number;
     snapshots: ThemeOverrides[]; // Saved states
 
+    // Favorites
+    favoriteStyleIds: string[];
+
     // UI State
     isFullScreen: boolean;
     showEditor: boolean;
@@ -42,6 +45,10 @@ interface ThemeState {
     restoreSnapshot: (index: number) => void;
     jumpToHistory: (index: number) => void;
 
+    // Favorites
+    toggleFavorite: (styleId: string) => void;
+    isFavorite: (styleId: string) => boolean;
+
     toggleFullScreen: () => void;
     toggleEditor: () => void;
     setShowEditor: (show: boolean) => void;
@@ -68,6 +75,7 @@ export const useThemeStore = create<ThemeState>()(
             historyIndex: 0,
             snapshots: [],
             lockedColors: [],
+            favoriteStyleIds: [],
 
             isFullScreen: false,
             showEditor: false,
@@ -203,6 +211,14 @@ export const useThemeStore = create<ThemeState>()(
                 }
             },
 
+            // Favorites
+            toggleFavorite: (styleId) => set((state) => ({
+                favoriteStyleIds: state.favoriteStyleIds.includes(styleId)
+                    ? state.favoriteStyleIds.filter(id => id !== styleId)
+                    : [...state.favoriteStyleIds, styleId]
+            })),
+            isFavorite: (styleId) => get().favoriteStyleIds.includes(styleId),
+
             toggleFullScreen: () => set((state) => ({ isFullScreen: !state.isFullScreen })),
             toggleEditor: () => set((state) => ({ showEditor: !state.showEditor })),
             setShowEditor: (show) => set({ showEditor: show }),
@@ -228,6 +244,7 @@ export const useThemeStore = create<ThemeState>()(
                 history: state.history,
                 historyIndex: state.historyIndex,
                 snapshots: state.snapshots,
+                favoriteStyleIds: state.favoriteStyleIds,
                 isSidebarCollapsed: state.isSidebarCollapsed,
                 editorMode: state.editorMode,
                 // Do not persist UI toggles like isFullScreen, showEditor, etc. if not desired,  

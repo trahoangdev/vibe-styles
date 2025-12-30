@@ -1,8 +1,10 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Sparkles, Palette, Zap, ArrowRight } from "lucide-react";
+import { Sparkles, Palette, Zap, ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+const ONBOARDING_STORAGE_KEY = 'vibe-styles-onboarding-completed';
 
 interface TourStep {
     title: string;
@@ -20,48 +22,55 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     className,
 }) => {
     const [currentStep, setCurrentStep] = React.useState(0);
-    const [isOpen, setIsOpen] = React.useState(true);
+    const [isOpen, setIsOpen] = React.useState(false);
 
-    // Check localStorage on mount to maybe suppress it?
-    // The user request did NOT include this logic, so I will omit it to be faithful to the request.
-    // However, I will add a check for the user's sake if they didn't realize it.
-    // Actually, let's just stick to the requested code.
+    // Check if user has completed onboarding before
+    React.useEffect(() => {
+        const hasCompleted = localStorage.getItem(ONBOARDING_STORAGE_KEY);
+        if (!hasCompleted) {
+            setIsOpen(true);
+        }
+    }, []);
 
     const steps: TourStep[] = [
         {
             title: "Welcome to Vibe Styles",
             description:
-                "Discover a world of stunning design components and templates that will transform your creative projects.",
+                "Explore and customize design systems from top brands like Linear, Spotify, and Vercel.",
             icon: <Sparkles className="h-12 w-12 text-primary" />,
         },
         {
-            title: "Customizable Themes",
+            title: "Customize Everything",
             description:
-                "Choose from a variety of beautiful themes and customize every aspect to match your brand perfectly.",
+                "Use the Theme Editor to tweak colors, typography, radius, and more. See changes in real-time.",
             icon: <Palette className="h-12 w-12 text-primary" />,
         },
         {
-            title: "Lightning Fast",
+            title: "Export & Build",
             description:
-                "Built with performance in mind. Experience blazing fast load times and smooth interactions.",
+                "Export your customized theme as CSS Variables or Tailwind Config. Ready for production!",
             icon: <Zap className="h-12 w-12 text-primary" />,
         },
     ];
 
     const totalSteps = steps.length;
 
+    const completeOnboarding = () => {
+        localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+        setIsOpen(false);
+        onComplete?.();
+    };
+
     const handleNext = () => {
         if (currentStep < totalSteps - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            setIsOpen(false);
-            onComplete?.();
+            completeOnboarding();
         }
     };
 
     const handleSkip = () => {
-        setIsOpen(false);
-        onComplete?.();
+        completeOnboarding();
     };
 
     const handlePrevious = () => {
@@ -91,6 +100,14 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
                 transition={{ type: "spring", duration: 0.5 }}
                 className="relative z-10 w-full max-w-md rounded-2xl border bg-background p-8 shadow-2xl"
             >
+                {/* Close button */}
+                <button
+                    onClick={handleSkip}
+                    className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                    aria-label="Close"
+                >
+                    <X className="h-4 w-4" />
+                </button>
                 {/* Step Indicator */}
                 <div className="mb-6 flex justify-center space-x-2">
                     {steps.map((_, index) => (

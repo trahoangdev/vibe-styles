@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { StyleSidebar, StyleSidebarRef } from '@/components/StyleSidebar';
 import { StylePreview } from '@/components/preview/StylePreview';
 import { ThemeEditor } from '@/components/editor/ThemeEditor';
@@ -11,6 +11,7 @@ import { getFullExportCode } from '@/lib/designStyles';
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import { useTheme } from '@/hooks/use-theme';
 import { useThemeStore } from '@/store/themeStore';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -42,14 +43,28 @@ const Index = () => {
 
   const currentStyleIndex = designStyles.findIndex(s => s.id === selectedStyle.id);
 
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    return Object.keys(themeOverrides.colors || {}).length > 0 ||
+      Object.keys(themeOverrides.fonts || {}).length > 0 ||
+      themeOverrides.radius !== undefined ||
+      themeOverrides.shadowStrength !== undefined ||
+      themeOverrides.borderWidth !== undefined ||
+      themeOverrides.density !== undefined;
+  }, [themeOverrides]);
+
+  // Warn before leaving with unsaved changes
+  useUnsavedChanges(hasUnsavedChanges, 'You have unsaved theme customizations. Are you sure you want to leave?');
+
   const handleCopyStyle = async () => {
     const code = getFullExportCode(selectedStyle);
 
     try {
       await navigator.clipboard.writeText(code);
       toast({
-        title: "Copied to clipboard!",
+        title: "✨ Copied to clipboard!",
         description: `${selectedStyle.name} design system is ready to paste.`,
+        className: "bg-green-500/10 border-green-500/20",
       });
     } catch (err) {
       const textArea = document.createElement('textarea');
@@ -60,8 +75,9 @@ const Index = () => {
       document.body.removeChild(textArea);
 
       toast({
-        title: "Copied to clipboard!",
+        title: "✨ Copied to clipboard!",
         description: `${selectedStyle.name} design system is ready to paste.`,
+        className: "bg-green-500/10 border-green-500/20",
       });
     }
   };
@@ -69,12 +85,17 @@ const Index = () => {
   const handleSelectStyle = (style: typeof selectedStyle) => {
     store.setSelectedStyle(style);
     store.setMobileMenuOpen(false);
+    toast({
+      title: `🎨 ${style.name}`,
+      description: "Style applied successfully",
+      duration: 1500,
+    });
   };
 
   const handleResetOverrides = () => {
     store.resetOverrides();
     toast({
-      title: "Theme reset",
+      title: "🔄 Theme reset",
       description: "All customizations have been cleared.",
     });
   };
@@ -82,7 +103,7 @@ const Index = () => {
   const handleRandomize = () => {
     store.randomizeTheme();
     toast({
-      title: "Feeling Lucky!",
+      title: "🎲 Feeling Lucky!",
       description: "Generated a new random theme based on color theory.",
     });
   };
@@ -286,6 +307,7 @@ const Index = () => {
         onCopyStyle={handleCopyStyle}
         onUndo={() => store.undoOverrides()}
         onRedo={() => store.redoOverrides()}
+        onShowShortcuts={() => store.setShowShortcuts(true)}
       />
     </div>
   );

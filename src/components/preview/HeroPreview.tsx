@@ -1,4 +1,5 @@
 import { type DesignStyle } from '@/lib/designStyles';
+import { Sparkles } from 'lucide-react';
 
 interface HeroPreviewProps {
     style: DesignStyle;
@@ -9,57 +10,86 @@ interface HeroPreviewProps {
 
 export function HeroPreview({ style, buttonStyle, inputStyle, isMobile = false }: HeroPreviewProps) {
     return (
-        <div className="lg:col-span-2 animate-slide-in">
+        <div className="lg:col-span-2 animate-slide-in flex flex-col justify-center min-h-[400px]">
             {/* Badge */}
             <div
-                className={`inline-block px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] ${isMobile ? 'mb-4' : 'mb-8'} shadow-sm border border-border`}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] ${isMobile ? 'mb-6' : 'mb-8'} border border-border w-fit`}
                 style={{
                     backgroundColor: `hsl(${style.colors.muted})`,
                     color: `hsl(${style.colors.mutedForeground})`,
                     borderRadius: style.radius,
                 }}
             >
-                Design Evolution
+                <Sparkles className="w-3 h-3" />
+                Design System Explorer
             </div>
 
-            {/* Heading */}
-            <h2
-                className={`${isMobile ? 'text-4xl mb-4' : 'text-6xl lg:text-7xl mb-8'} leading-[0.9] tracking-tighter`}
-                style={{ fontFamily: style.fonts.heading, fontWeight: 'var(--style-heading-weight)' }}
+            {/* Heading - MASSIVE */}
+            <h1
+                className={`${isMobile ? 'mb-8' : 'mb-10'} leading-[1] tracking-tight font-black`}
+                style={{ 
+                    fontFamily: style.fonts.heading,
+                    fontSize: isMobile ? 'clamp(3rem, 12vw, 5rem)' : 'clamp(4rem, 8vw, 7rem)',
+                }}
             >
-                The Next<br />
-                <span className="opacity-40" style={{ color: `hsl(${style.colors.mutedForeground})` }}>Generation UI.</span>
-            </h2>
+                <span style={{ color: `hsl(${style.colors.foreground})` }}>Welcome to</span>
+                <br />
+                <span 
+                    className="bg-clip-text text-transparent"
+                    style={{ 
+                        backgroundImage: `linear-gradient(135deg, hsl(${style.colors.primary}), hsl(${style.colors.accent}))`,
+                    }}
+                >
+                    Vibe Styles
+                </span>
+            </h1>
+
+            {/* Author */}
+            <p
+                className={`${isMobile ? 'text-xl mb-8' : 'text-2xl mb-10'} font-medium tracking-wide`}
+                style={{ color: `hsl(${style.colors.mutedForeground})` }}
+            >
+                crafted by{' '}
+                <span 
+                    className="font-bold"
+                    style={{ color: `hsl(${style.colors.primary})` }}
+                >
+                    @trahoangdev
+                </span>
+            </p>
 
             {/* Description */}
             <p
-                className={`text-xl ${isMobile ? 'mb-6' : 'mb-10'} max-w-lg leading-relaxed opacity-80 font-medium`}
+                className={`${isMobile ? 'text-xl mb-10' : 'text-3xl mb-14'} max-w-2xl leading-relaxed opacity-70`}
                 style={{ color: `hsl(${style.colors.mutedForeground})` }}
             >
-                Experience the {style.name} aesthetic. A meticulous blend of radical typography and functional density, crafted for the modern web.
+                Experience the <strong style={{ color: `hsl(${style.colors.foreground})` }}>{style.name}</strong> aesthetic. 
+                Explore, customize, and export beautiful design tokens.
             </p>
 
-            {/* Buttons */}
-            <div className="flex flex-wrap gap-4">
+            {/* Buttons - BIGGER */}
+            <div className="flex flex-wrap gap-5">
                 <button
-                    className={`px-8 py-3.5 text-sm font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl ${buttonStyle}`}
+                    className={`px-10 py-5 text-lg font-bold tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 ${buttonStyle}`}
                     style={{
                         backgroundColor: `hsl(${style.colors.primary})`,
                         color: `hsl(${style.colors.primaryForeground})`,
                         borderRadius: style.radius,
+                        boxShadow: `0 8px 24px hsl(${style.colors.primary} / 0.4)`,
                     }}
                 >
-                    Explore Assets
+                    Start Exploring
                 </button>
                 <button
-                    className={`px-8 py-3.5 text-sm font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg ${inputStyle}`}
+                    className={`px-10 py-5 text-lg font-bold tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 border-2 ${inputStyle}`}
                     style={{
                         backgroundColor: 'transparent',
                         color: `hsl(${style.colors.foreground})`,
                         borderRadius: style.radius,
+                        borderColor: `hsl(${style.colors.border})`,
                     }}
                 >
-                    View Docs
+                    View on GitHub
                 </button>
             </div>
         </div>
